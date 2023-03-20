@@ -40,14 +40,7 @@ source("NNfunction.R") # here we define the NN function getNNAratio()
 
 for different periods and boxes
 
-```{r}
-list=ls(pattern = "*_sf")
-list
-certain <- "*1_sf"
-uncertain <- "*2_sf"
-ls(pattern = "*1_sf")
-ls(pattern = uncertain)
-
+```{r NNA-loop}
 box_list <- c("Box1", "Box2", "Municipal", "Rectangular")
 for (box in box_list) {print(box)}
 
@@ -55,7 +48,7 @@ box <- "Box1"
 result <- NULL
 mastertable <- NULL
 
-period_list <- c("Pre", "NEO", "CHALCO", "BA","EBA", "LBA", "IA", "EIA", "LIA", "HELLEN", "RP", "LRP", "LA_","EMA", "HMA", "LMA", 
+period_list <- c("Pre", "NEO", "CHALCO", "BA","EBA", "IA", "EIA", "LIA", "HELLEN", "RP", "LRP", "LA_","EMA", "HMA", "LMA", 
                  "MA_XIV", "MA_XVII")
 
 # Box loop is not working, use manual box assignment now.
@@ -63,7 +56,7 @@ period_list <- c("Pre", "NEO", "CHALCO", "BA","EBA", "LBA", "IA", "EIA", "LIA", 
 #   print(box)
 #   box <- mget(ls(pattern = paste0(box,"$")))
 
-box <- Box1  #assign different boxes manually
+box <- Box2 #assign different boxes manually
 for(period in period_list){
   
     print(period)
@@ -93,10 +86,13 @@ for(period in period_list){
 
 # Save results
 # dir.create("../outputs")
-write_csv(as.data.frame(result), "../outputs/Box1_NNA.csv")
+write_csv(as.data.frame(result), "../outputs/Box2_NNA.csv")  
+
+
 #   mastertable <- c(mastertable, result)
 # }
 ```
+Note that LBA NNA calculation was erroring out for Box2 so may need to be troubleshot or done manually. 
 
 ### Results
 #### Prehistoric
