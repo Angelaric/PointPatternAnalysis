@@ -12,7 +12,7 @@
 getNNratio <- function(period_sites, study_area){  # these two arguments should be sf objects in the same CRS
   library(sf)
   library(spatstat)
-  st_crs(period_sites)==st_crs(study_area)
+  if(st_crs(period_sites)==st_crs(study_area)) {
   # create an owin object out of the study area polygon
   window <- as.owin(study_area)
   # create ppp object out of period-sites that fall within the study area
@@ -44,6 +44,11 @@ getNNratio <- function(period_sites, study_area){  # these two arguments should 
   #plot(study_area$geometry,border = "blue"); plot(period_sites$geometry, main = paste0("NN ratio inside the bounding polygon is ", round(r,2)), add=TRUE) # I (AG) just added this because I want to see what is inside the box. That's why we have to outcomes
   
   r
+  }
+  else {
+    print("fix your crs first")  
+  }
+  
 }
 
 # r <- getNNratio(my_period_sites, my_Box) # How to run this function

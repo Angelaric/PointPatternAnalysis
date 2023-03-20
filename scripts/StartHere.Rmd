@@ -34,9 +34,7 @@ library(spatstat.data)
 source("LoadData.R") #  this line runs the LoadData.R script which loads the site and bounding box data into the current environment
 source("NNfunction.R") # here we define the NN function getNNAratio()
 ```
-```{r}
-plot()
-```
+
 
 # Run getNNAratio 
 
@@ -45,7 +43,59 @@ for different periods and boxes
 ```{r}
 list=ls(pattern = "*_sf")
 list
+certain <- "*1_sf"
+uncertain <- "*2_sf"
+ls(pattern = "*1_sf")
+ls(pattern = uncertain)
 
+box_list <- c("Box1", "Box2", "Municipal", "Rectangular")
+for (box in box_list) {print(box)}
+
+box <- "Box1"
+result <- NULL
+mastertable <- NULL
+
+period_list <- c("Pre", "NEO", "CHALCO", "BA","EBA", "LBA", "IA", "EIA", "LIA", "HELLEN", "RP", "LRP", "LA_","EMA", "HMA", "LMA", 
+                 "MA_XIV", "MA_XVII")
+
+# Box loop is not working, use manual box assignment now.
+# for (box in box_list){
+#   print(box)
+#   box <- mget(ls(pattern = paste0(box,"$")))
+
+box <- Box1  #assign different boxes manually
+for(period in period_list){
+  
+    print(period)
+
+  # find period site 
+    period_site <- mget(ls(pattern = paste0("^",period,"*")))
+
+      # get the certain period site
+  print(period)
+  period_site_certain <- period_site[[grep("1_sf$",names(period_site))]]
+  
+  # calculate NNA on certain period site 
+     r_1 <- getNNratio(period_site_certain, box)
+  # verification message
+     paste0("ratio for ",names(period_site)[[grep("1_sf$",names(period_site))]]," is ", round(r_1, 3))
+     
+  # get the inclusive-uncertain period site
+  period_site_uncertain <- period_site[[grep("2_sf$",names(period_site))]]
+  # calculate NNA on certain period site
+     r_2 <- getNNratio(period_site_uncertain, box)
+     # verification
+      paste0("ratio for ",names(period_site)[[grep("2_sf$",names(period_site))]]," is ", round(r_2,3))
+  r <- rbind(r_1, r_2)
+  colnames(r) <- period
+  result <- cbind(result, r)
+}
+
+# Save results
+# dir.create("../outputs")
+write_csv(as.data.frame(result), "../outputs/Box1_NNA.csv")
+#   mastertable <- c(mastertable, result)
+# }
 ```
 
 ### Results
