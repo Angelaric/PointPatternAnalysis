@@ -1,0 +1,779 @@
+---
+title: "Point Pattern Analysis"
+author: "Angel Bogdanov Grigorov"
+date: "Created 18 Mar 2023, updated `r format(Sys.time(), '%d %B, %Y')`"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    theme: flatly
+    highlight: tango
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      message = FALSE,
+                      warning = FALSE)
+```
+
+## Load library
+
+```{r}
+
+library(tidyverse)
+library(sf)
+library(raster)
+# install.packages("spatstat")
+library(spatstat)
+library(spatstat.data)
+#library(maptools)
+
+```
+
+## Load data
+```{r}
+source("LoadData.R") #  this line runs the LoadData.R script which loads the site and bounding box data into the current environment
+source("NNfunction.R") # here we define the NN function getNNAratio()
+```
+```{r}
+plot()
+```
+
+# Run getNNAratio 
+
+for different periods and boxes
+
+```{r}
+list=ls(pattern = "*_sf")
+list
+
+```
+
+### Results
+#### Prehistoric
+
+```{r result}
+
+# Box 1
+
+Pre_1_Box1 <- getNNratio(Pre_Settl_1_sf, Box1) # Only certain dated settlements
+
+Pre_1_2_Box1 <- getNNratio(Pre_Settl_1_2_sf, Box1) # Including the uncertain dated settlements
+
+```
+
+```{r result}
+
+# Box 2
+
+Pre_1_Box2 <- getNNratio(Pre_Settl_1_sf, Box2) # Only certain dated settlements
+
+Pre_1_2_Box2 <- getNNratio(Pre_Settl_1_2_sf, Box2) # Including the uncertain dated settlement
+
+```
+
+```{r result}
+
+# Rectangular
+
+Pre_1_Rect <- getNNratio(Pre_Settl_1_sf, Rectangular) # Only certain dated settlements
+
+Pre_1_2_Rect <- getNNratio(Pre_Settl_1_2_sf, Rectangular) # Including the uncertain dated settlement
+
+```
+
+```{r result}
+# Municipal
+
+Pre_1_Muni <- getNNratio(Pre_Settl_1_sf, Municipal) # Only certain dated settlements
+
+Pre_1_2_Muni <- getNNratio(Pre_Settl_1_2_sf, Municipal) # Including the uncertain dated settlement
+
+```
+
+
+
+
+
+
+
+#### NEO
+
+```{r result}
+
+# Box 1
+
+getNNratio(NEO_Settl_1_sf, Box1) # Only certain dated settlements
+
+getNNratio(NEO_Settl_1_2_sf, Box1) # Including the uncertain dated settlements
+
+```
+
+```{r result}
+
+# Box 2
+
+getNNratio(NEO_Settl_1_sf, Box2) # Only certain dated settlements
+
+getNNratio(NEO_Settl_1_2_sf, Box2) # Including the uncertain dated settlement
+
+```
+
+```{r result}
+
+# Rectangular
+
+getNNratio(NEO_Settl_1_sf, Rectangular) # Only certain dated settlements
+
+getNNratio(NEO_Settl_1_2_sf, Rectangular) # Including the uncertain dated settlement
+
+```
+
+```{r result}
+# Municipal
+
+getNNratio(NEO_Settl_1_sf, Municipal) # Only certain dated settlements
+
+getNNratio(NEO_Settl_1_2_sf, Municipal) # Including the uncertain dated settlement
+
+```
+
+
+
+
+
+
+#### CHALCO
+
+```{r result}
+
+# Box 1
+
+getNNratio(CHALCO_Settl_1_sf, Box1) # Only certain dated settlements
+
+getNNratio(CHALCO_Settl_1_2_sf, Box1) # Including the uncertain dated settlements
+
+```
+
+```{r result}
+
+# Box 2
+
+getNNratio(CHALCO_Settl_1_sf, Box2) # Only certain dated settlements
+
+getNNratio(CHALCO_Settl_1_2_sf, Box2) # Including the uncertain dated settlement
+
+```
+
+```{r result}
+
+# Rectangular
+
+getNNratio(CHALCO_Settl_1_sf, Rectangular) # Only certain dated settlements
+
+getNNratio(CHALCO_Settl_1_2_sf, Rectangular) # Including the uncertain dated settlement
+
+```
+
+```{r result}
+# Municipal
+
+getNNratio(CHALCO_Settl_1_sf, Municipal) # Only certain dated settlements
+
+getNNratio(CHALCO_Settl_1_2_sf, Municipal) # Including the uncertain dated settlement
+
+```
+
+
+#### BA
+
+```{r result}
+
+# Box 1
+
+getNNratio(BA_Settl_1_sf, Box1) # Only certain dated settlements
+
+getNNratio(BA_Settl_1_2_sf, Box1) # Including the uncertain dated settlements
+
+```
+
+```{r result}
+
+# Box 2
+
+getNNratio(BA_Settl_1_sf, Box2) # Only certain dated settlements
+
+getNNratio(BA_Settl_1_2_sf, Box2) # Including the uncertain dated settlement
+
+```
+
+```{r result}
+
+# Rectangular
+
+getNNratio(BA_Settl_1_sf, Rectangular) # Only certain dated settlements
+
+getNNratio(BA_Settl_1_2_sf, Rectangular) # Including the uncertain dated settlement
+
+```
+
+```{r result}
+# Municipal
+
+getNNratio(BA_Settl_1_sf, Municipal) # Only certain dated settlements
+
+getNNratio(BA_Settl_1_2_sf, Municipal) # Including the uncertain dated settlement
+
+```
+
+
+#### EBA 
+```{r result}
+
+# Box 1
+
+getNNratio(EBA_Settl_1_sf, Box1) # Only certain dated settlements
+
+getNNratio(EBA_Settl_1_2_sf, Box1) # Including the uncertain dated settlements
+
+```
+
+```{r result}
+
+# Box 2
+
+getNNratio(EBA_Settl_1_sf, Box2) # Only certain dated settlements
+
+getNNratio(EBA_Settl_1_2_sf, Box2) # Including the uncertain dated settlement
+
+```
+
+```{r result}
+
+# Rectangular
+
+getNNratio(EBA_Settl_1_sf, Rectangular) # Only certain dated settlements
+
+getNNratio(EBA_Settl_1_2_sf, Rectangular) # Including the uncertain dated settlement
+
+```
+
+```{r result}
+# Municipal
+
+getNNratio(EBA_Settl_1_sf, Municipal) # Only certain dated settlements
+
+getNNratio(EBA_Settl_1_2_sf, Municipal) # Including the uncertain dated settlement
+
+```
+
+
+#### LBA
+Само 1/2 точки е безсмислено да се прави ПП за тази епоха
+
+
+#### IA
+
+```{r result}
+
+# Box 1
+
+getNNratio(IA_Settl_1_sf, Box1) # Only certain dated settlements
+
+getNNratio(IA_Settl_1_2_sf, Box1) # Including the uncertain dated settlements
+
+```
+
+```{r result}
+
+# Box 2
+
+getNNratio(IA_Settl_1_sf, Box2) # Only certain dated settlements
+
+getNNratio(IA_Settl_1_2_sf, Box2) # Including the uncertain dated settlement
+
+```
+
+```{r result}
+
+# Rectangular
+
+getNNratio(IA_Settl_1_sf, Rectangular) # Only certain dated settlements
+
+getNNratio(IA_Settl_1_2_sf, Rectangular) # Including the uncertain dated settlement
+
+```
+
+```{r result}
+# Municipal
+
+getNNratio(IA_Settl_1_sf, Municipal) # Only certain dated settlements
+
+getNNratio(IA_Settl_1_2_sf, Municipal) # Including the uncertain dated settlement
+
+```
+
+
+#### ΙΕΑ 
+```{r result}
+
+# Box 1
+
+getNNratio(EIA_Settl_1_sf, Box1) # Only certain dated settlements
+
+getNNratio(EIA_Settl_1_2_sf, Box1) # Including the uncertain dated settlements
+
+```
+
+```{r result}
+
+# Box 2
+
+getNNratio(EIA_Settl_1_sf, Box2) # Only certain dated settlements
+
+getNNratio(EIA_Settl_1_2_sf, Box2) # Including the uncertain dated settlement
+
+```
+
+```{r result}
+
+# Rectangular
+
+getNNratio(EIA_Settl_1_sf, Rectangular) # Only certain dated settlements
+
+getNNratio(EIA_Settl_1_2_sf, Rectangular) # Including the uncertain dated settlement
+
+```
+
+```{r result}
+# Municipal
+
+getNNratio(EIA_Settl_1_sf, Municipal) # Only certain dated settlements
+
+getNNratio(EIA_Settl_1_2_sf, Municipal) # Including the uncertain dated settlement
+
+```
+
+
+#### LIA
+
+```{r result}
+
+# Box 1
+
+getNNratio(LIA_Settl_1_sf, Box1) # Only certain dated settlements
+
+getNNratio(LIA_Settl_1_2_sf, Box1) # Including the uncertain dated settlements
+
+```
+
+```{r result}
+
+# Box 2
+
+getNNratio(LIA_Settl_1_sf, Box2) # Only certain dated settlements
+
+getNNratio(LIA_Settl_1_2_sf, Box2) # Including the uncertain dated settlement
+
+```
+
+```{r result}
+
+# Rectangular
+
+getNNratio(LIA_Settl_1_sf, Rectangular) # Only certain dated settlements
+
+getNNratio(LIA_Settl_1_2_sf, Rectangular) # Including the uncertain dated settlement
+
+```
+
+```{r result}
+# Municipal
+
+getNNratio(LIA_Settl_1_sf, Municipal) # Only certain dated settlements
+
+getNNratio(LIA_Settl_1_2_sf, Municipal) # Including the uncertain dated settlement
+
+```
+
+
+#### HELLEN
+
+```{r result}
+# Box 1
+
+getNNratio(HELLEN_Settl_1_sf, Box1) # Only certain dated settlements
+
+getNNratio(HELLEN_Settl_1_2_sf, Box1) # Including the uncertain dated settlements
+
+```
+
+```{r result}
+
+# Box 2
+
+getNNratio(HELLEN_Settl_1_sf, Box2) # Only certain dated settlements
+
+getNNratio(HELLEN_Settl_1_2_sf, Box2) # Including the uncertain dated settlement
+
+```
+
+```{r result}
+
+# Rectangular
+
+getNNratio(HELLEN_Settl_1_sf, Rectangular) # Only certain dated settlements
+
+getNNratio(HELLEN_Settl_1_2_sf, Rectangular) # Including the uncertain dated settlement
+
+```
+
+```{r result}
+# Municipal
+
+getNNratio(HELLEN_Settl_1_sf, Municipal) # Only certain dated settlements
+
+getNNratio(HELLEN_Settl_1_2_sf, Municipal) # Including the uncertain dated settlement
+
+```
+
+
+#### RP
+
+```{r result}
+# Box 1
+
+getNNratio(RP_Settl_1_sf, Box1) # Only certain dated settlements
+
+getNNratio(RP_Settl_1_2_sf, Box1) # Including the uncertain dated settlements
+
+```
+
+```{r result}
+
+# Box 2
+
+getNNratio(RP_Settl_1_sf, Box2) # Only certain dated settlements
+
+getNNratio(RP_Settl_1_2_sf, Box2) # Including the uncertain dated settlement
+
+```
+
+```{r result}
+
+# Rectangular
+
+getNNratio(RP_Settl_1_sf, Rectangular) # Only certain dated settlements
+
+getNNratio(RP_Settl_1_2_sf, Rectangular) # Including the uncertain dated settlement
+
+```
+
+```{r result}
+# Municipal
+
+getNNratio(RP_Settl_1_sf, Municipal) # Only certain dated settlements
+
+getNNratio(RP_Settl_1_2_sf, Municipal) # Including the uncertain dated settlement
+
+```
+
+
+#### LRP
+
+```{r result}
+# Box 1
+
+getNNratio(LRP_Settl_1_sf, Box1) # Only certain dated settlements
+
+getNNratio(LRP_Settl_1_2_sf, Box1) # Including the uncertain dated settlements
+
+```
+
+```{r result}
+
+# Box 2
+
+getNNratio(LRP_Settl_1_sf, Box2) # Only certain dated settlements
+
+getNNratio(LRP_Settl_1_2_sf, Box2) # Including the uncertain dated settlement
+
+```
+
+```{r result}
+
+# Rectangular
+
+getNNratio(LRP_Settl_1_sf, Rectangular) # Only certain dated settlements
+
+getNNratio(LRP_Settl_1_2_sf, Rectangular) # Including the uncertain dated settlement
+
+```
+
+```{r result}
+# Municipal
+
+getNNratio(LRP_Settl_1_sf, Municipal) # Only certain dated settlements
+
+getNNratio(LRP_Settl_1_2_sf, Municipal) # Including the uncertain dated settlement
+
+```
+
+
+#### LA
+
+```{r result}
+# Box 1
+
+getNNratio(LA_Settl_1_sf, Box1) # Only certain dated settlements
+
+getNNratio(LA_Settl_1_2_sf, Box1) # Including the uncertain dated settlements
+
+```
+
+```{r result}
+
+# Box 2
+
+getNNratio(LA_Settl_1_sf, Box2) # Only certain dated settlements
+
+getNNratio(LA_Settl_1_2_sf, Box2) # Including the uncertain dated settlement
+
+```
+
+```{r result}
+
+# Rectangular
+
+getNNratio(LA_Settl_1_sf, Rectangular) # Only certain dated settlements
+
+getNNratio(LA_Settl_1_2_sf, Rectangular) # Including the uncertain dated settlement
+
+```
+
+```{r result}
+# Municipal
+
+getNNratio(LA_Settl_1_sf, Municipal) # Only certain dated settlements
+
+getNNratio(LA_Settl_1_2_sf, Municipal) # Including the uncertain dated settlement
+
+```
+
+
+#### EMA
+
+```{r result}
+# Box 1
+
+getNNratio(EMA_Settl_1_sf, Box1) # Only certain dated settlements
+
+getNNratio(EMA_Settl_1_2_sf, Box1) # Including the uncertain dated settlements
+
+```
+
+```{r result}
+
+# Box 2
+
+getNNratio(EMA_Settl_1_sf, Box2) # Only certain dated settlements
+
+getNNratio(EMA_Settl_1_2_sf, Box2) # Including the uncertain dated settlement
+
+```
+
+```{r result}
+
+# Rectangular
+
+getNNratio(EMA_Settl_1_sf, Rectangular) # Only certain dated settlements
+
+getNNratio(EMA_Settl_1_2_sf, Rectangular) # Including the uncertain dated settlement
+
+```
+
+```{r result}
+# Municipal
+
+getNNratio(EMA_Settl_1_sf, Municipal) # Only certain dated settlements
+
+getNNratio(EMA_Settl_1_2_sf, Municipal) # Including the uncertain dated settlement
+
+```
+
+
+#### HMA
+
+```{r result}
+# Box 1
+
+getNNratio(HMA_Settl_1_sf, Box1) # Only certain dated settlements
+
+getNNratio(HMA_Settl_1_2_sf, Box1) # Including the uncertain dated settlements
+
+```
+
+```{r result}
+
+# Box 2
+
+getNNratio(HMA_Settl_1_sf, Box2) # Only certain dated settlements
+
+getNNratio(HMA_Settl_1_2_sf, Box2) # Including the uncertain dated settlement
+
+```
+
+```{r result}
+
+# Rectangular
+
+getNNratio(HMA_Settl_1_sf, Rectangular) # Only certain dated settlements
+
+getNNratio(HMA_Settl_1_2_sf, Rectangular) # Including the uncertain dated settlement
+
+```
+
+```{r result}
+# Municipal
+
+getNNratio(HMA_Settl_1_sf, Municipal) # Only certain dated settlements
+
+getNNratio(HMA_Settl_1_2_sf, Municipal) # Including the uncertain dated settlement
+
+```
+
+
+#### LMA
+
+```{r result}
+# Box 1
+
+getNNratio(LMA_Settl_1_sf, Box1) # Only certain dated settlements
+
+getNNratio(LMA_Settl_1_2_sf, Box1) # Including the uncertain dated settlements
+
+```
+
+```{r result}
+
+# Box 2
+
+getNNratio(LMA_Settl_1_sf, Box2) # Only certain dated settlements
+
+getNNratio(LMA_Settl_1_2_sf, Box2) # Including the uncertain dated settlement
+
+```
+
+```{r result}
+
+# Rectangular
+
+getNNratio(LMA_Settl_1_sf, Rectangular) # Only certain dated settlements
+
+getNNratio(LMA_Settl_1_2_sf, Rectangular) # Including the uncertain dated settlement
+
+```
+
+```{r result}
+# Municipal
+
+getNNratio(LMA_Settl_1_sf, Municipal) # Only certain dated settlements
+
+getNNratio(LMA_Settl_1_2_sf, Municipal) # Including the uncertain dated settlement
+
+```
+
+
+#### MA_XIV
+
+```{r result}
+# Box 1
+
+getNNratio(MA_XIV_Settl_1_sf, Box1) # Only certain dated settlements
+
+getNNratio(MA_XIV_Settl_1_2_sf, Box1) # Including the uncertain dated settlements
+
+```
+
+```{r result}
+
+# Box 2
+
+getNNratio(MA_XIV_Settl_1_sf, Box2) # Only certain dated settlements
+
+getNNratio(MA_XIV_Settl_1_2_sf, Box2) # Including the uncertain dated settlement
+
+```
+
+```{r result}
+
+# Rectangular
+
+getNNratio(MA_XIV_Settl_1_sf, Rectangular) # Only certain dated settlements
+
+getNNratio(MA_XIV_Settl_1_2_sf, Rectangular) # Including the uncertain dated settlement
+
+```
+
+```{r result}
+# Municipal
+
+getNNratio(MA_XIV_Settl_1_sf, Municipal) # Only certain dated settlements
+
+getNNratio(MA_XIV_Settl_1_2_sf, Municipal) # Including the uncertain dated settlement
+
+```
+
+
+#### MA_XVII
+
+```{r result}
+# Box 1
+
+getNNratio(MA_XVII_Settl_1_sf, Box1) # Only certain dated settlements
+
+getNNratio(MA_XVII_Settl_1_2_sf, Box1) # Including the uncertain dated settlements
+
+```
+
+```{r result}
+
+# Box 2
+
+getNNratio(MA_XVII_Settl_1_sf, Box2) # Only certain dated settlements
+
+getNNratio(MA_XVII_Settl_1_2_sf, Box2) # Including the uncertain dated settlement
+
+```
+
+```{r result}
+
+# Rectangular
+
+getNNratio(MA_XVII_Settl_1_sf, Rectangular) # Only certain dated settlements
+
+getNNratio(MA_XVII_Settl_1_2_sf, Rectangular) # Including the uncertain dated settlement
+
+```
+
+```{r result}
+# Municipal
+
+getNNratio(MA_XVII_Settl_1_sf, Municipal) # Only certain dated settlements
+
+getNNratio(MA_XVII_Settl_1_2_sf, Municipal) # Including the uncertain dated settlement
+
+```
+
+Steps: 
+
+1) generate owin for Box 1 or 2 simple features
+2) intersect points with sf of Box 1 and 2 and convert the result to ppp object
+3) run the nndist and r calculations
+
+Prehist
+
+
+
+
+
+

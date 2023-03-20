@@ -39,384 +39,8 @@ library(tidyverse)
 library(here)
 library(dplyr)
 library(ggplot2)
-
-```
-
-## Load data
-
-In the following chunk, you will load a csv that ....Това е csv файлът с всичките обекти и даните за тях от Казанлъшката котловина. Файлът включва и обекти, основно крепости, които са регистрирани извън изследваната територия, основно да служат като спомагателни при анализите с пътищата. Когаро използваш csv трябва да се увериш, че координатите ти са с точки, а не със запетайки. Ако са със запетайки R няма да разпознае кординатите и това ще ти доведе масови главоболия. Ако случайно Гугъл шитът астроен да слага запетайки при числата вместо точки, лесно можеш да промениш това от "Файл" -> "Настройки" -> и да промениш "Локал" на "Съединени щати". След това си експортираш файла на в csv и си го зареждаш в R.
-```{r data}
-
-Sites <- read_csv(here("data/ChronCatalogue6Extract.csv")) 
-head(Sites)
-```
-## Settlements = 1
-
-Този раздел включва филтрирането и селектирането на всичките обекти със селищни функции, които са само със сигурни дати в съответният период и попадат само в територийте на петте общини: Павел баня, Казанлък, Мъглиж, Гурково и Николаево
-
-# Solution
-```{r}
-
-Settlements1 <- Sites %>% filter(Община=="Павел баня" | Община=="Казанлък" | Община=="Мъглиж" | Община=="Гурково" | Община=="Николаево")%>%
-  
-# unique(Settlements1$Община)
-
- 
-# След това филтрирам само обектите, които по един или друг начин, могат да бъдат класифицирани като селища:
-  
-  filter(Вид == "Бани" | Вид == "Военен лагер/ град" | Вид == "Град" | Вид == "Единична постройка" | Вид == "Единична постройка?" | Вид == "Крепост" | Вид == "Крепост/ кула?" | Вид == "Крепост/ светилище?" | Вид == "Крепост/ селище?" | Вид == "Крепост?" | Вид == "Кула" | Вид == "Кула?" | Вид == "Манастир" | Вид == "Манастир/ черква?" | Вид == "Пътна станция" | Вид == "Пътна станция?" | Вид == "Светилище" | Вид == "Светилище/ селище?" | Вид == "Светилище?" | Вид == "Селище" | Вид == "Селище?" | Вид == "Селищна могила" | Вид == "Стопанство" | Вид == "Стопанство/ селище" | Вид == "Укрепен град" | Вид == "Укрепление?")
-
-
-Settlements1 %>% 
-   filter( Пра.==1 | Палео.==1 | Нео.==1 | РНео.==1 | СНео.==1 | КНео.==1 | Х==1 | РХ==1 | КХ==1) %>% 
-  mutate(Праистория=Пра.+Палео.+Нео.+РНео.+СНео.+КНео.+Х+РХ+КХ) %>%
-  pull(Праистория)
-
-
-Settlements1 %>% 
-  filter( КА==1 | КРЕ==1 |РВ ==1 ) %>% 
-  mutate(Късноантична=КА+КРЕ+РВ) %>%
-  pull(Късноантична)
-  
-Settlements1 %>% 
-  filter( ЖЕ==1 | РЖЕ==1 | РЖЕ1==1 | РЖЕ2==1 | КЖЕ==1 | КЖЕ1==1 | КЖЕ2==1 | К==1 | Ел.==1 | РЕл.==1 | КЕл.==1  ) %>% 
-  mutate(Желязна=ЖЕ+РЖЕ+РЖЕ1+РЖЕ2+КЖЕ+КЖЕ1+КЖЕ2+К+Ел.+РЕл.+КЕл.) %>%
-  #filter(Желязна >=1) %>% 
-  pull(Желязна)
-```
-
-# Angels original
-
-```{r}
-
-# Това са филтрите за селищата, които са със сигурни дати, т.е. кодове 1. Махнати са обектите с несигурни дати, т.е. кодираните с 2. 
-
-# Селектирам само обектите (записите), които попадат в петте общини (територията на изследване). Тъй като тук ще работим само със сигурно датирани обекти, т.е. кодирани с 1, кръщаваме файла Settlements1.  
-
-Settlements1 <- Sites %>% filter(Община=="Павел баня" | Община=="Казанлък" | Община=="Мъглиж" | Община=="Гурково" | Община=="Николаево")%>%
-  
-# unique(Settlements1$Община)
-
- 
-# След това филтрирам само обектите, които по един или друг начин, могат да бъдат класифицирани като селища:
-  
-  filter(Вид == "Бани" | Вид == "Военен лагер/ град" | Вид == "Град" | Вид == "Единична постройка" | Вид == "Единична постройка?" | Вид == "Крепост" | Вид == "Крепост/ кула?" | Вид == "Крепост/ светилище?" | Вид == "Крепост/ селище?" | Вид == "Крепост?" | Вид == "Кула" | Вид == "Кула?" | Вид == "Манастир" | Вид == "Манастир/ черква?" | Вид == "Пътна станция" | Вид == "Пътна станция?" | Вид == "Светилище" | Вид == "Светилище/ селище?" | Вид == "Светилище?" | Вид == "Селище" | Вид == "Селище?" | Вид == "Селищна могила" | Вид == "Стопанство" | Вид == "Стопанство/ селище" | Вид == "Укрепен град" | Вид == "Укрепление?")%>%
-  
-# unique(Settlements1$Вид)
-  
-# Следващата стъпка е да филтрирам само обектите със сигурни дати, без такива с колебаещи се дати. Това значи, че избирами за всяка епоха код == 1, а код 2 отпада. 
-  filter( Пра.==1 | Палео.==1 | Нео.==1 | РНео.==1 | СНео.==1 | КНео.==1 | Х==1 | РХ==1 | КХ==1 | БЕ==1 | РБЕ==1 | РБЕ1==1 | РБЕ2==1 | РБЕ3==1 | СБЕ==1 | КБЕ==1 | ЖЕ==1 | РЖЕ==1 | РЖЕ1==1 | РЖЕ2==1 | КЖЕ==1 | КЖЕ1==1 | КЖЕ2==1 | А==1 | К==1 | Ел.==1 | РЕл.==1 | КЕл.==1 | РЕ==1 | КА==1 | КРЕ==1 | РВ==1 | Ср.==1 | РСр.==1 | ЗСр.==1 | КСр.==1 | ПБЦ==1 | ВБЦ==1 | Възраждане==1 | Неопр.==1)%>%
-  
-  
-# Следващите редове ще направя колони в които ще бъдат събрани всичките кодове. По този начин ще мога да селектирам всичките обекти от праисторията или от средновековието. 
-  
-# Първо ще направим колона, в която ще обединим всичките праисторически обекти:
-  
-
-   
-  # Сега и за останалите епохи
-  
-  # Неолит:
-  
-  mutate(Неолит=Нео.+РНео.+СНео.+КНео.)%>%
-  
-  # Халколит:
-
-  mutate(Халколит=Х+РХ+КХ)%>%
-  
-  # Бронзова епоха
-
-  mutate(Бронз=БЕ+РБЕ+РБЕ1+РБЕ2+РБЕ3+СБЕ+КБЕ)%>%
-  
-  # Раннобронзова:
-  
-  mutate(Раннобронзова=РБЕ+РБЕ1+РБЕ2+РБЕ3)%>%
-  
-  # СБЕ няма регистрирани обекти.
-  
-  # КБЕ няма други подпериоди, така че за нея ще използвам колоната КБЕ. Когато селектираш обектите от този период, не забравяй, че тук не си използвал мутейт, и ако искаш да избереш само тези с точна дата, трябва да е == 1, а ако искаш да включиш и тези с несигурна дата, трябва да филтрираш с >= 1  
-  
-  # Желязна
-
-  mutate(Желязна=ЖЕ+РЖЕ+РЖЕ1+РЖЕ2+КЖЕ+КЖЕ1+КЖЕ2+К+Ел.+РЕл.+КЕл.)%>%
-  
-  # Ранножелязна:
-
-  mutate(Ранножелязна=РЖЕ+РЖЕ1+РЖЕ2)%>%
-  
-  # Късножелязна:
-
-  mutate(Късножелязна=КЖЕ+КЖЕ1+КЖЕ2+К+Ел.+РЕл.+КЕл.)%>%
-  
-  # Елинизъм:
-
-  mutate(Елинизъм=Ел.+РЕл.+КЕл.)%>%
-  
-  # За римската епоха няма други подпериоди, така че за него ще използвам колоната РЕ. Когато селектираш обектите от този период, не забравяй, че тук не си използвал мутейт, и ако искаш да избереш само тези с точна дата, трябва да е == 1, а ако искаш да включиш и тези с несигурна дата, трябва да филтрираш с >= 1
-  
-  # За късноримската епоха няма други подпериоди, така че за него ще използвам колоната КРЕ. Когато селектираш обектите от този период, не забравяй, че тук не си използвал мутейт, и ако искаш да избереш само тези с точна дата, трябва да е == 1, а ако искаш да включиш и тези с несигурна дата, трябва да филтрираш с >= 1
-
-  # Късноантична:
-
-  mutate(Късноантична=КА+КРЕ+РВ)%>%
-
-# Средновеквие (без Късното):
-
-  mutate(СредновековиеXIV=Ср.+РСр.+ЗСр.+ПБЦ+ВБЦ)%>%
-
-# Средновеквие (с Късното)
-
-  mutate(СредновековиеXVII=Ср.+РСр.+ЗСр.+КСр.+ПБЦ+ВБЦ)%>%
-  
-# Ранно средновековие
-
-  mutate(Ранноср.=РСр.+ПБЦ)%>%
-
-# Зряло средновековие
-
-  mutate(Зрялоср.=ЗСр.+ВБЦ)
-
-# Късното средновековие няма други подпериоди, така че за него ще използвам колоната КСр. Когато селектираш обектите от този период, не забравяй, че тук не си използвал мутейт, и ако искаш да избереш само тези с точна дата, трябва да е == 1, а ако искаш да включиш и тези с несигурна дата, трябва да филтрираш с >= 1
-
-Settlements1
-
-```
-
-```{r}
-
-# Тук селектирам само колоните, които ще са ми нужни, за да не затормозявам програмата с излишни такива. 
-
-Settlements1 <- select(Settlements1, Cat, E_coord:N_coord, Вид, КБЕ, РЕ, КРЕ, Праистория:Зрялоср., КСр.)
-
-Settlements1
-
-unique(Settlements1$КБЕ)
-unique(Settlements1$РЕ)
-unique(Settlements1$КРЕ)
-unique(Settlements1$Праистория)
-unique(Settlements1$Неолит)
-unique(Settlements1$Халколит)
-unique(Settlements1$Бронз)
-unique(Settlements1$Раннобронзова)
-unique(Settlements1$Желязна)
-unique(Settlements1$Ранножелязна)
-unique(Settlements1$Късножелязна)
-unique(Settlements1$Елинизъм)
-unique(Settlements1$Късноантична)
-unique(Settlements1$СредновековиеXIV)
-unique(Settlements1$СредновековиеXVII)
-unique(Settlements1$Ранноср.)
-unique(Settlements1$Зрялоср.)
-unique(Settlements1$КСр.)
-
-```
-
-```{r}
-
-# Новосъздадената data frame я експортирам като нов csv файл. 
-
-write.csv(Settlements1, here("data/Settlements1.csv"), row.names=TRUE) # Дотук всичко е вярно и съвпада със селекцията в АркГИС
-
-```
-
-```{r}
-# Тъй като сега ще трябва да направя от този файл Simple Feature зареждаме `sf` for working with vector data
-
 library(sf)
-
-```
-
-```{r}
-
-# Convert the data frame to an sf object 
-
-Settlements1_sf <- st_as_sf(Settlements1, coords = c("E_coord", "N_coord"), crs=4326)%>%
-  st_transform(crs = 32635)
-
-st_crs(Settlements1_sf)
-
-Settlements1_sf
-
-```
-
-## Settlements = 1+2 
-
-Този раздел включва филтрирането и селектирането на всичките обекти със селищни функции, които са със сигурни или несигурни дати в съответният период и попадат само в територийте на петте общини: Павел баня, Казанлък, Мъглиж, Гурково и Николаево
-
-```{r}
-
-# Това е csv файлът, който заредих по-горе, с всичките обекти и даните за тях от Казанлъшката котловина. Файлът включва и обекти, основно крепости, които са регистрирани извън изследваната територия, основно да служат като спомагателни при анализите с пътищата.    
-
-Sites
-
-# Селектирам само обектите (записите), които попадат в петте общини (територията на изследване). Тъй като тук ще работим и с несигурно датирани обекти, т.е. кодирани с 1 и 2, кръщаваме файла Settlements1_2.  
-
-Settlements1_2 <- filter(Sites, Община=="Павел баня" | Община=="Казанлък" | Община=="Мъглиж" | Община=="Гурково" | Община=="Николаево")%>%
-  
-# unique(Settlements1$Община)
-
-# След това филтрирам само обектите, които по един или друг начин, могат да бъдат класифицирани като селища:
-  
-  filter(Вид == "Бани" | Вид == "Военен лагер/ град" | Вид == "Град" | Вид == "Единична постройка" | Вид == "Единична постройка?" | Вид == "Крепост" | Вид == "Крепост/ кула?" | Вид == "Крепост/ светилище?" | Вид == "Крепост/ селище?" | Вид == "Крепост?" | Вид == "Кула" | Вид == "Кула?" | Вид == "Манастир" | Вид == "Манастир/ черква?" | Вид == "Пътна станция" | Вид == "Пътна станция?" | Вид == "Светилище" | Вид == "Светилище/ селище?" | Вид == "Светилище?" | Вид == "Селище" | Вид == "Селище?" | Вид == "Селищна могила" | Вид == "Стопанство" | Вид == "Стопанство/ селище" | Вид == "Укрепен град" | Вид == "Укрепление?")%>%
-  
-# unique(Settlements1$Вид)
-  
-# Следващата стъпка е да филтрирам обектите със сигурни и несигурни дати, без такива с колебаещи се дати. Това значи, че избирами за всяка епоха код >= 1 
-  filter( Пра.>=1 | Палео.>=1 | Нео.>=1 | РНео.>=1 | СНео.>=1 | КНео.>=1 | Х>=1 | РХ>=1 | КХ>=1 | БЕ>=1 | РБЕ>=1 | РБЕ1>=1 | РБЕ2>=1 | РБЕ3>=1 | СБЕ>=1 | КБЕ>=1 | ЖЕ>=1 | РЖЕ>=1 | РЖЕ1>=1 | РЖЕ2>=1 | КЖЕ>=1 | КЖЕ1>=1 | КЖЕ2>=1 | А>=1 | К>=1 | Ел.>=1 | РЕл.>=1 | КЕл.>=1 | РЕ>=1 | КА>=1 | КРЕ>=1 | РВ>=1 | Ср.>=1 | РСр.>=1 | ЗСр.>=1 | КСр.>=1 | ПБЦ>=1 | ВБЦ>=1 | Възраждане>=1 | Неопр.>=1)%>%
-  
-# Следващите редове ще направя колони в които ще бъдат събрани всичките кодове. По този начин ще мога да селектирам всичките обекти от праисторията или от средновековието. 
-  
-# Първо ще направим колона, в която ще обединим всичките праисторически обекти:
-  
-  mutate(Праистория=Пра.+Палео.+Нео.+РНео.+СНео.+КНео.+Х+РХ+КХ)%>%
-  
-  # Сега и за останалите епохи
-  
-  # Неолит:
-  
-  mutate(Неолит=Нео.+РНео.+СНео.+КНео.)%>%
-  
-  # Халколит:
-
-  mutate(Халколит=Х+РХ+КХ)%>%
-  
-  # Бронзова епоха
-
-  mutate(Бронз=БЕ+РБЕ+РБЕ1+РБЕ2+РБЕ3+СБЕ+КБЕ)%>%
-  
-  # Раннобронзова:
-  
-  mutate(Раннобронзова=РБЕ+РБЕ1+РБЕ2+РБЕ3)%>%
-  
-  # СБЕ няма регистрирани обекти
-  
-  # КБЕ няма други подпериоди, така че за нея ще използвам колоната КБЕ. Когато селектираш обектите от този период, не забравяй, че тук не си използвал мутейт, и ако искаш да избереш само тези с точна дата, трябва да е == 1, а ако искаш да включиш и тези с несигурна дата, трябва да филтрираш с >= 1
-  
-  # Желязна
-
-  mutate(Желязна=ЖЕ+РЖЕ+РЖЕ1+РЖЕ2+КЖЕ+КЖЕ1+КЖЕ2+К+Ел.+РЕл.+КЕл.)%>%
-  
-  # Ранножелязна:
-
-  mutate(Ранножелязна=РЖЕ+РЖЕ1+РЖЕ2)%>%
-  
-  # Късножелязна:
-
-  mutate(Късножелязна=КЖЕ+КЖЕ1+КЖЕ2+К+Ел.+РЕл.+КЕл.)%>%
-  
-  # Елинизъм:
-
-  mutate(Елинизъм=Ел.+РЕл.+КЕл.)%>%
-  
-  # За римската епоха няма други подпериоди, така че за него ще използвам колоната РЕ. Когато селектираш обектите от този период, не забравяй, че тук не си използвал мутейт, и ако искаш да избереш само тези с точна дата, трябва да е == 1, а ако искаш да включиш и тези с несигурна дата, трябва да филтрираш с >= 1
-  
-  # За късноримската епоха няма други подпериоди, така че за него ще използвам колоната КРЕ. Когато селектираш обектите от този период, не забравяй, че тук не си използвал мутейт, и ако искаш да избереш само тези с точна дата, трябва да е == 1, а ако искаш да включиш и тези с несигурна дата, трябва да филтрираш с >= 1
-
-  # Късноантична:
-
-  mutate(Късноантична=КА+КРЕ+РВ)%>%
-
-# Средновеквие (без Късното):
-
-  mutate(СредновековиеXIV=Ср.+РСр.+ЗСр.+ПБЦ+ВБЦ)%>%
-
-# Средновеквие (с Късното)
-
-  mutate(СредновековиеXVII=Ср.+РСр.+ЗСр.+КСр.+ПБЦ+ВБЦ)%>%
-  
-# Ранно средновековие
-
-  mutate(Ранноср.=РСр.+ПБЦ)%>%
-
-# Зряло средновековие
-
-  mutate(Зрялоср.=ЗСр.+ВБЦ)
-
-# Късното средновековие няма други подпериоди, така че за него ще използвам колоната КСр. Когато селектираш обектите от този период, не забравяй, че тук не си използвал мутейт, и ако искаш да избереш само тези с точна дата, трябва да е == 1, а ако искаш да включиш и тези с несигурна дата, трябва да филтрираш с >= 1
-
-Settlements1_2
-
-```
-
-```{r}
-
-# Тук селектирам само колоните, които ще са ми нужни, за да не затормозявам програмата с излишни такива. 
-# Забележи функцията dplyr::select(). Това е защото съм заредил и функцията sf(), която се конфронтира с dplyr и се появява грешка, за това трябваше изрично да кажа, на R, че искам да използвам функцията select() на dplyr
-
-Settlements1_2 <- dplyr::select(Settlements1_2, Cat, E_coord:N_coord, Вид, КБЕ, РЕ, КРЕ, Праистория:Зрялоср., КСр.)
-
-Settlements1_2
-
-```
-
-```{r}
-
-# Новосъздадената data frame я експортирам като нов csv файл. 
-
-write.csv(Settlements1_2, here("data/Settlements1_2.csv"), row.names=TRUE) # Дотук всичко е вярно и съвпада със селекцията в АркГИС
-
-```
-
-```{r}
-
-# Ако не сме заредили sf() тъй като сега ще трябва да направя от този файл Simple Feature трябва да го заредим. Аз съм го направил горе, затова го оставям коментирано.
-
-# library(sf)
-
-# Convert the data frame to an sf object (for working with vector data)
-
-Settlements1_2_sf <- st_as_sf(Settlements1_2, coords = c("E_coord", "N_coord"), crs=4326)%>%
-  st_transform(crs = 32635)
-
-st_crs(Settlements1_2_sf)
-
-Settlements1_2_sf
-
-```
-
-```{r}
-
 library(raster)
-
-```
-
-### Point Pattern Analysis
-
-```{r}
-
-# Това е цялата територия нужна за анализите. В този растер Тунджа е кодирана с 0, което означава, че тя ще бъде разпознавана от модела като бариера и няма да го пропуска да преминава през нея. Към Тунджа са добавени бродовете, които съм регистрирал. Те ще служат за места, където моделът ще може да пресече реката.
-
-Teritory <- raster("Z:/Daisy_20220720/(_1_Tasks_DN/Shps/Sites/MainDirections/Directions.tif")
-
-# Това са тестовите територий, в които ще се извърши point pattern анализа
-
-Box1 <-st_read("../data/Box1.shp")%>%
-  as_Spatial()
-
-Box2 <-st_read("../data/Box2.shp")%>%
-  as_Spatial()
-
-Municipal <-st_read("../data/Municipal.shp")%>%
-  as_Spatial()
-
-Rectangular <-st_read("../data/Rectangular.shp")%>%
-  as_Spatial()
-
-# see what it looks like
-
-# Ploting the territory with the certain dated settlements 
-plot(Teritory); plot(Box1, border="green", add=TRUE); plot(Box2, border="yellow", add=TRUE); plot(Municipal, border="red", add=TRUE); plot(Rectangular, border="blue", add=TRUE); plot(Settlements1_sf$geometry, cex=0.1, pch = 16, col="firebrick", add = T)
-
-# Ploting the territory including the the uncertain dated settlements too
-plot(Teritory); plot(Box1, border="green", add=TRUE); plot(Box2, border="yellow", add=TRUE); plot(Municipal, border="red", add=TRUE); plot(Rectangular, border="blue", add=TRUE); plot(Settlements1_2_sf$geometry, cex=0.1, pch = 16, col="firebrick", add = T)
-
-
-```
-
-```{r}
-
-# First install package spatstat
-
 # install.packages("spatstat")
 library(spatstat)
 library(spatstat.data)
@@ -426,40 +50,813 @@ library(maptools)
 
 ```
 
+## Load data
+
+In the following chunk, you will load a csv that ....Това е csv файлът с всичките обекти и даните за тях от Казанлъшката котловина. Файлът включва и обекти, основно крепости, които са регистрирани извън изследваната територия, основно да служат като спомагателни при анализите с пътищата. Когаро използваш csv трябва да се увериш, че координатите ти са с точки, а не със запетайки. Ако са със запетайки R няма да разпознае кординатите и това ще ти доведе масови главоболия. Ако случайно Гугъл шитът астроен да слага запетайки при числата вместо точки, лесно можеш да промениш това от "Файл" -> "Настройки" -> и да промениш "Локал" на "Съединени щати". След това си експортираш файла на в csv и си го зареждаш в R.
+```{r data}
+
+Sites <- read_csv(here("data/ChronCatalogue6Extract.csv")) # Този файл е оригинален с оригиналните местположения на обектите. За CFMN моделите, тъй като Тунджа е 200 метров буфер, се наложи да направя друг файл в който да преместя някои от обектите на около 50 м разстояние от оригиналното им местоположение, за да не влизат в NA стойностите на Тунджа. 
+head(Sites)
+```
+Loading the whole examined territory including Tundzha river as a NA value so it can prevent the models for any crossings the river and the places where it is allowed
+
 ```{r}
 
-# After that:
+Teritory <- raster("Z://Daisy_20220720/(_1_Tasks_DN/Shps/Sites/MainDirections/Directions.tif")
 
-# Make a simple feature 'Box1' polygon into an owin object
-
-Box1_w <- as.owin.SpatialPolygons(Box1)
-
-# Make a simple feature 'Box2' polygon into an owin object
-
-Box2_w <- as.owin.SpatialPolygons(Box2)
-
-# Make a simple feature 'Municipal' polygon into an owin object
-
-Municipal_w <- as.owin.SpatialPolygons(Municipal)
-
-# Make a simple feature 'Rectangular' polygon into an owin object
-
-Rectangular_w <- as.owin.SpatialPolygons(Rectangular)
+plot(Teritory)
 
 ```
 
-### Prehistoric
+## Settlements = 1
+
+Този раздел включва филтрирането и селектирането на всичките обекти със селищни функции, които са само със сигурни дати в съответният период и попадат само в територийте на петте общини: Павел баня, Казанлък, Мъглиж, Гурково и Николаево
 
 ```{r}
 
-# Селектираме само праисторическите (само селища), които са 
+# Филтрирам само обектите, попадащи в петте общини, намиращи се в Котловината:
 
-PreSettlemnts1 <- Settlements1_sf %>%
-  filter(Праистория>=1)
+Settlements5muni <- Sites %>% filter(Община=="Павел баня" | Община=="Казанлък" | Община=="Мъглиж" | Община=="Гурково" | Община=="Николаево")%>%
+  
+# unique(Settlements1$Община)
 
+ 
+# След това филтрирам само обектите, които по един или друг начин, могат да бъдат класифицирани като селища:
+  
+  filter(Вид == "Бани" | Вид == "Военен лагер/ град" | Вид == "Град" | Вид == "Единична постройка" | Вид == "Единична постройка?" | Вид == "Крепост" | Вид == "Крепост/ кула?" | Вид == "Крепост/ светилище?" | Вид == "Крепост/ селище?" | Вид == "Крепост?" | Вид == "Кула" | Вид == "Кула?" | Вид == "Манастир" | Вид == "Манастир/ черква?" | Вид == "Пътна станция" | Вид == "Пътна станция?" | Вид == "Светилище" | Вид == "Светилище/ селище?" | Вид == "Светилище?" | Вид == "Селище" | Вид == "Селище?" | Вид == "Селищна могила" | Вид == "Стопанство" | Вид == "Стопанство/ селище" | Вид == "Укрепен град" | Вид == "Укрепление?")
+
+
+# След това правим селекция само на обектите от различните епохи със сигурни дати в съответните епохи:
+
+
+# Праистория
+
+Pre_Settl_1 <- Settlements5muni %>% 
+   filter( Пра.==1 | Палео.==1 | Нео.==1 | РНео.==1 | СНео.==1 | КНео.==1 | Х==1 | РХ==1 | КХ==1) %>% 
+  mutate(Праистория=Пра.+Палео.+Нео.+РНео.+СНео.+КНео.+Х+РХ+КХ)%>% # Бройката съвпада с тази в ГИС
+    dplyr::select(Cat, E_coord:N_coord, Вид, Праистория) # Тук селектирам само колоните, които ще са ми нужни
+
+Pre_Settl_1_sf <- st_as_sf(Pre_Settl_1, coords = c("E_coord", "N_coord"), crs=4326)%>% # Convert the data frame to an sf object (for working with vector data)
+  st_transform(crs = 32635)
+
+st_crs(Pre_Settl_1_sf) # Check the crs = 32635
+
+plot(Teritory); plot(Pre_Settl_1_sf, cex=0.5, pch = 19, col="red", add = T) # Plot to see the results
+
+Pre_Settl_1_sf
+
+
+
+
+# Неолит:
+
+NEO_Settl_1 <- Settlements5muni %>% 
+   filter( Нео.==1 | РНео.==1 | СНео.==1 | КНео.==1) %>% 
+  mutate(Неолит=Нео.+РНео.+СНео.+КНео.)%>%
+  dplyr::select(Cat, E_coord:N_coord, Вид, Неолит) # Тук селектирам само колоните, които ще са ми нужни
+
+NEO_Settl_1_sf <- st_as_sf(NEO_Settl_1, coords = c("E_coord", "N_coord"), crs=4326)%>% # Convert the data frame to an sf object (for working with vector data)
+  st_transform(crs = 32635)
+
+st_crs(NEO_Settl_1_sf) # Check the crs = 32635
+
+plot(Teritory); plot(NEO_Settl_1_sf, cex=0.5, pch = 19, col="red", add = T) # Plot to see the results; # Бройката съвпада с тази в ГИС = 6  
+
+NEO_Settl_1_sf
+
+
+
+
+# Халколит:
+
+CHALCO_Settl_1 <- Settlements5muni %>% 
+   filter( Х==1 | РХ==1 | КХ==1) %>% 
+  mutate(Халколит=Х+РХ+КХ)%>%
+  dplyr::select(Cat, E_coord:N_coord, Вид, Халколит) # Тук селектирам само колоните, които ще са ми нужни
+
+CHALCO_Settl_1_sf <- st_as_sf(CHALCO_Settl_1, coords = c("E_coord", "N_coord"), crs=4326)%>% # Convert the data frame to an sf object (for working with vector data)
+  st_transform(crs = 32635)
+
+st_crs(CHALCO_Settl_1_sf) # Check the crs = 32635
+
+plot(Teritory); plot(CHALCO_Settl_1_sf, cex=0.5, pch = 19, col="red", add = T) # Plot to see the results; # Бройката съвпада с тази в ГИС=12
+  
+CHALCO_Settl_1_sf
+
+
+
+
+# Бронзова епоха
+
+BA_Settl_1 <- Settlements5muni %>% 
+   filter( БЕ==1|РБЕ==1|РБЕ1==1|РБЕ2==1|РБЕ3==1|СБЕ==1|КБЕ==1) %>% 
+  mutate(Бронз=БЕ+РБЕ+РБЕ1+РБЕ2+РБЕ3+СБЕ+КБЕ)%>% # Бройката съвпада с тази в ГИС
+  dplyr::select(Cat, E_coord:N_coord, Вид, Бронз) # Тук селектирам само колоните, които ще са ми нужни
+
+BA_Settl_1_sf <- st_as_sf(BA_Settl_1, coords = c("E_coord", "N_coord"), crs=4326)%>% # Convert the data frame to an sf object (for working with vector data)
+  st_transform(crs = 32635)
+
+st_crs(BA_Settl_1_sf) # Check the crs = 32635
+
+plot(Teritory); plot(BA_Settl_1_sf, cex=0.5, pch = 19, col="red", add = T) # Plot to see the results; # Бройката съвпада с тази в ГИС = 12
+  
+BA_Settl_1_sf
+
+
+
+
+
+# Раннобронзова
+  
+EBA_Settl_1 <- Settlements5muni %>% 
+   filter( РБЕ==1|РБЕ1==1|РБЕ2==1|РБЕ3==1) %>% 
+  mutate(Раннобронзова=РБЕ+РБЕ1+РБЕ2+РБЕ3)%>%
+  dplyr::select(Cat, E_coord:N_coord, Вид, Раннобронзова) # Тук селектирам само колоните, които ще са ми нужни
+
+EBA_Settl_1_sf <- st_as_sf(EBA_Settl_1, coords = c("E_coord", "N_coord"), crs=4326)%>% # Convert the data frame to an sf object (for working with vector data)
+  st_transform(crs = 32635)
+
+st_crs(EBA_Settl_1_sf) # Check the crs = 32635
+
+plot(Teritory); plot(EBA_Settl_1_sf, cex=0.5, pch = 19, col="red", add = T) # Plot to see the results; # Бройката съвпада с тази в ГИС = 8
+
+EBA_Settl_1_sf
+
+
+
+  
+# СБЕ няма регистрирани обекти
+
+
+  
+# КБЕ няма други подпериоди, така че за нея ще използвам колоната КБЕ. Когато селектираш обектите от този период, не забравяй, че тук не си използвал мутейт, и ако искаш да избереш само тези с точна дата, трябва да е == 1, а ако искаш да включиш и тези с несигурна дата, трябва да филтрираш с >= 1  
+
+LBA_Settl_1 <- Settlements5muni %>% 
+   filter( КБЕ==1) %>% 
+  dplyr::select(Cat, E_coord:N_coord, Вид, КБЕ) # Тук селектирам само колоните, които ще са ми нужни
+
+LBA_Settl_1_sf <- st_as_sf(LBA_Settl_1, coords = c("E_coord", "N_coord"), crs=4326)%>% # Convert the data frame to an sf object (for working with vector data)
+  st_transform(crs = 32635)
+
+st_crs(LBA_Settl_1_sf) # Check the crs = 32635
+
+plot(Teritory); plot(LBA_Settl_1_sf, cex=0.5, pch = 19, col="red", add = T) # Plot to see the results; # Бройката съвпада с тази в ГИС = 1
+
+LBA_Settl_1_sf
+
+
+
+
+
+  
+# Желязна епоха
+
+IA_Settl_1 <- Settlements5muni %>% 
+  filter( ЖЕ==1 | РЖЕ==1 | РЖЕ1==1 | РЖЕ2==1 | КЖЕ==1 | КЖЕ1==1 | КЖЕ2==1 | К==1 | Ел.==1 | РЕл.==1 | КЕл.==1  ) %>% 
+  mutate(Желязна=ЖЕ+РЖЕ+РЖЕ1+РЖЕ2+КЖЕ+КЖЕ1+КЖЕ2+К+Ел.+РЕл.+КЕл.)%>% 
+  dplyr::select(Cat, E_coord:N_coord, Вид, Желязна) # Тук селектирам само колоните, които ще са ми нужни
+
+IA_Settl_1_sf <- st_as_sf(IA_Settl_1, coords = c("E_coord", "N_coord"), crs=4326)%>% # Convert the data frame to an sf object (for working with vector data)
+  st_transform(crs = 32635)
+
+st_crs(IA_Settl_1_sf) # Check the crs = 32635
+
+plot(Teritory); plot(IA_Settl_1_sf, cex=0.5, pch = 19, col="red", add = T) # Plot to see the results; # Не съвпадат. Тук са 80, а в ГИС излизат 81. Проблемът идва от обект кат. № 1432, който в АКБ е отбелязан, че се намира в обл. Пловдив, общ. Брезово, земл. Розовец, а в действителност той попада в Александрово, община Павел баня. Когато направя филтер за петте общини в Р, този обект не е включен, но когато направя Select by Location в ГИС, той попада в общ. Павел баня, тъй като координатите му са там. Всъщност той е на границата.
+  
+IA_Settl_1_sf
+
+
+
+
+# Ранножелязна:
+
+EIA_Settl_1 <- Settlements5muni %>% 
+  filter( РЖЕ==1 | РЖЕ1==1 | РЖЕ2==1) %>% 
+  mutate(Ранножелязна=РЖЕ+РЖЕ1+РЖЕ2)%>% 
+  dplyr::select(Cat, E_coord:N_coord, Вид, Ранножелязна) # Тук селектирам само колоните, които ще са ми нужни
+
+EIA_Settl_1_sf <- st_as_sf(EIA_Settl_1, coords = c("E_coord", "N_coord"), crs=4326)%>% # Convert the data frame to an sf object (for working with vector data)
+  st_transform(crs = 32635)
+
+st_crs(EIA_Settl_1_sf) # Check the crs = 32635
+
+plot(Teritory); plot(EIA_Settl_1_sf, cex=0.5, pch = 19, col="red", add = T) # Plot to see the results; # Резултатите съвпадат с ГИС = 16
+
+EIA_Settl_1_sf
+
+
+
+
+  
+# Късножелязна
+
+LIA_Settl_1 <- Settlements5muni %>% 
+  filter( КЖЕ==1 | КЖЕ1==1 | КЖЕ2==1 | К==1 | Ел.==1 | РЕл.==1 | КЕл.==1  ) %>% 
+  mutate(Късножелязна=КЖЕ+КЖЕ1+КЖЕ2+К+Ел.+РЕл.+КЕл.)%>%
+  dplyr::select(Cat, E_coord:N_coord, Вид, Късножелязна) # Тук селектирам само колоните, които ще са ми нужни
+
+LIA_Settl_1_sf <- st_as_sf(LIA_Settl_1, coords = c("E_coord", "N_coord"), crs=4326)%>% # Convert the data frame to an sf object (for working with vector data)
+  st_transform(crs = 32635)
+
+st_crs(LIA_Settl_1_sf) # Check the crs = 32635
+
+plot(Teritory); plot(LIA_Settl_1_sf, cex=0.5, pch = 19, col="red", add = T) # Plot to see the results; # Не съвпадат. Тук са 70, а в ГИС излизат 71. Проблемът идва от обект кат. № 1432, който в АКБ е отбелязан, че се намира в обл. Пловдив, общ. Брезово, земл. Розовец, а в действителност той попада в Александрово, община Павел баня. Когато направя филтер за петте общини в Р, този обект не е включен, но когато направя Select by Location в ГИС, той попада в общ. Павел баня, тъй като координатите му са там. Всъщност той е на границата. 
+  
+LIA_Settl_1_sf
+
+
+
+
+
+# Класика
+
+
+
+
+# Елинизъм
+
+HELLEN_Settl_1 <- Settlements5muni %>% 
+  filter( Ел.==1 | РЕл.==1 | КЕл.==1  ) %>% 
+  mutate(Елинизъм=Ел.+РЕл.+КЕл.)%>% 
+  dplyr::select(Cat, E_coord:N_coord, Вид, Елинизъм) # Тук селектирам само колоните, които ще са ми нужни
+
+HELLEN_Settl_1_sf <- st_as_sf(HELLEN_Settl_1, coords = c("E_coord", "N_coord"), crs=4326)%>% # Convert the data frame to an sf object (for working with vector data)
+  st_transform(crs = 32635)
+
+st_crs(HELLEN_Settl_1_sf) # Check the crs = 32635
+
+plot(Teritory); plot(HELLEN_Settl_1_sf, cex=0.5, pch = 19, col="red", add = T) # Plot to see the results; # Не съвпадат. Тук са 32, а в ГИС излизат 33. Проблемът идва от обект кат. № 1432, който в АКБ е отбелязан, че се намира в обл. Пловдив, общ. Брезово, земл. Розовец, а в действителност той попада в Александрово, община Павел баня. Когато направя филтер за петте общини в Р, този обект не е включен, но когато направя Select by Location в ГИС, той попада в общ. Павел баня, тъй като координатите му са там. Всъщност той е на границата
+
+HELLEN_Settl_1_sf
+
+
+
+
+  
+# РЕ. За римската епоха няма други подпериоди, така че за него ще използвам колоната РЕ. Когато селектираш обектите от този период, не забравяй, че тук не си използвал мутейт, и ако искаш да избереш само тези с точна дата, трябва да е == 1, а ако искаш да включиш и тези с несигурна дата, трябва да филтрираш с >= 1
+
+RP_Settl_1 <- Settlements5muni %>% 
+  filter(РЕ==1) %>% 
+  dplyr::select(Cat, E_coord:N_coord, Вид, РЕ) # Тук селектирам само колоните, които ще са ми нужни
+
+RP_Settl_1_sf <- st_as_sf(RP_Settl_1, coords = c("E_coord", "N_coord"), crs=4326)%>% # Convert the data frame to an sf object (for working with vector data)
+  st_transform(crs = 32635) # Бройката съвпада с тази в ГИС = 35
+
+st_crs(RP_Settl_1_sf) # Check the crs = 32635
+
+plot(Teritory); plot(RP_Settl_1_sf, cex=0.5, pch = 19, col="red", add = T) # Plot to see the results;  # Бройката съвпада с тази в ГИС = 35
+
+RP_Settl_1_sf
+
+
+
+
+  
+# КРЕ. За късноримската епоха няма други подпериоди, така че за него ще използвам колоната КРЕ. Когато селектираш обектите от този период, не забравяй, че тук не си използвал мутейт, и ако искаш да избереш само тези с точна дата, трябва да е == 1, а ако искаш да включиш и тези с несигурна дата, трябва да филтрираш с >= 1
+
+LRP_Settl_1 <- Settlements5muni %>% 
+  filter(КРЕ==1) %>% 
+  dplyr::select(Cat, E_coord:N_coord, Вид, КРЕ) # Тук селектирам само колоните, които ще са ми нужни
+
+LRP_Settl_1_sf <- st_as_sf(LRP_Settl_1, coords = c("E_coord", "N_coord"), crs=4326)%>% # Convert the data frame to an sf object (for working with vector data)
+  st_transform(crs = 32635) 
+
+st_crs(LRP_Settl_1_sf) # Check the crs = 32635
+
+plot(Teritory); plot(LRP_Settl_1_sf, cex=0.5, pch = 19, col="red", add = T) # Plot to see the results; # Бройката съвпада с тази в ГИС = 19
+
+LRP_Settl_1_sf
+
+
+
+
+# Късноантична:
+
+LA_Settl_1 <- Settlements5muni %>% 
+  filter( КА==1 | КРЕ==1 |РВ ==1  ) %>% 
+  mutate(Късноантична=КА+КРЕ+РВ)%>% 
+  dplyr::select(Cat, E_coord:N_coord, Вид, Късноантична) # Тук селектирам само колоните, които ще са ми нужни
+
+LA_Settl_1_sf <- st_as_sf(LA_Settl_1, coords = c("E_coord", "N_coord"), crs=4326)%>% # Convert the data frame to an sf object (for working with vector data)
+  st_transform(crs = 32635)
+
+st_crs(LA_Settl_1_sf) # Check the crs = 32635
+
+plot(Teritory); plot(LA_Settl_1_sf, cex=0.5, pch = 19, col="red", add = T) # Plot to see the results; # Бройката съвпада с тази в ГИС = 63 
+
+LA_Settl_1_sf
+    
+
+
+
+    
+
+# Средновеквие (без Късното):
+
+MA_XIV_Settl_1 <- Settlements5muni %>% 
+  filter( Ср.==1 | РСр.==1 | ЗСр.==1 | ПБЦ==1 | ВБЦ==1  ) %>% 
+  mutate(СредновековиеXIV=Ср.+РСр.+ЗСр.+ПБЦ+ВБЦ)%>%
+  dplyr::select(Cat, E_coord:N_coord, Вид, СредновековиеXIV) # Тук селектирам само колоните, които ще са ми нужни
+
+MA_XIV_Settl_1_sf <- st_as_sf(MA_XIV_Settl_1, coords = c("E_coord", "N_coord"), crs=4326)%>% # Convert the data frame to an sf object (for working with vector data)
+  st_transform(crs = 32635)
+
+st_crs(MA_XIV_Settl_1_sf) # Check the crs = 32635
+
+plot(Teritory); plot(MA_XIV_Settl_1_sf, cex=0.5, pch = 19, col="red", add = T) # Plot to see the results; # Бройката съвпада с тази в ГИС = 75
+
+MA_XIV_Settl_1_sf
+
+
+
+
+# Средновеквие (с Късното)
+
+MA_XVII_Settl_1 <- Settlements5muni %>% 
+  filter( Ср.==1 | РСр.==1 | ЗСр.==1 | КСр.==1 | ПБЦ==1 | ВБЦ==1  ) %>% 
+  mutate(СредновековиеXVII=Ср.+РСр.+ЗСр.+КСр.+ПБЦ+ВБЦ)%>%
+  dplyr::select(Cat, E_coord:N_coord, Вид, СредновековиеXVII) # Тук селектирам само колоните, които ще са ми нужни
+
+MA_XVII_Settl_1_sf <- st_as_sf(MA_XVII_Settl_1, coords = c("E_coord", "N_coord"), crs=4326)%>% # Convert the data frame to an sf object (for working with vector data)
+  st_transform(crs = 32635)
+
+st_crs(MA_XVII_Settl_1_sf) # Check the crs = 32635
+
+plot(Teritory); plot(MA_XVII_Settl_1_sf, cex=0.5, pch = 19, col="red", add = T) # Plot to see the results; # Бройката съвпада с тази в ГИС = 130
+
+MA_XVII_Settl_1_sf
+
+
+
+
+
+  
+# Ранно средновековие
+
+EMA_Settl_1 <- Settlements5muni %>% 
+  filter( РСр.==1 | ПБЦ==1  ) %>% 
+  mutate(Ранноср.=РСр.+ПБЦ)%>%
+  dplyr::select(Cat, E_coord:N_coord, Вид, Ранноср.) # Тук селектирам само колоните, които ще са ми нужни
+
+EMA_Settl_1_sf <- st_as_sf(EMA_Settl_1, coords = c("E_coord", "N_coord"), crs=4326)%>% # Convert the data frame to an sf object (for working with vector data)
+  st_transform(crs = 32635)
+
+st_crs(EMA_Settl_1_sf) # Check the crs = 32635
+
+plot(Teritory); plot(EMA_Settl_1_sf, cex=0.5, pch = 19, col="red", add = T) # Plot to see the results; # Бройката съвпада с тази в ГИС = 8
+
+EMA_Settl_1_sf
+
+
+
+
+# Зряло средновековие
+
+HMA_Settl_1 <- Settlements5muni %>% 
+  filter( ЗСр.==1 | ВБЦ==1  ) %>% 
+  mutate(Зрялоср.=ЗСр.+ВБЦ)%>%
+  dplyr::select(Cat, E_coord:N_coord, Вид, Зрялоср.) # Тук селектирам само колоните, които ще са ми нужни
+
+HMA_Settl_1_sf <- st_as_sf(HMA_Settl_1, coords = c("E_coord", "N_coord"), crs=4326)%>% # Convert the data frame to an sf object (for working with vector data)
+  st_transform(crs = 32635)
+
+st_crs(HMA_Settl_1_sf) # Check the crs = 32635
+
+plot(Teritory); plot(HMA_Settl_1_sf, cex=0.5, pch = 19, col="red", add = T) # Plot to see the results; # Бройката съвпада с тази в ГИС = 48
+
+HMA_Settl_1_sf
+
+
+# Късно средновековие
+
+LMA_Settl_1 <- Settlements5muni %>% 
+  filter( КСр.==1  ) %>% 
+  dplyr::select(Cat, E_coord:N_coord, Вид, КСр.) # Тук селектирам само колоните, които ще са ми нужни
+
+LMA_Settl_1_sf <- st_as_sf(LMA_Settl_1, coords = c("E_coord", "N_coord"), crs=4326)%>% # Convert the data frame to an sf object (for working with vector data)
+  st_transform(crs = 32635)
+
+st_crs(LMA_Settl_1_sf) # Check the crs = 32635
+
+plot(Teritory); plot(LMA_Settl_1_sf, cex=0.5, pch = 19, col="red", add = T) # Plot to see the results; # Бройката съвпада с тази в ГИС = 72
+
+LMA_Settl_1_sf
+
+```
+
+## Settlements = 1+2
+
+Този раздел включва филтрирането и селектирането на всичките обекти със селищни функции, които включват и несигурни дати в съответният период и попадат само в територийте на петте общини: Павел баня, Казанлък, Мъглиж, Гурково и Николаево
+
+```{r}
+
+# Използвам файлът Settlements5muni, който съдържа в себе си всичките селищни обекти от петте общини
+  
+Settlements5muni
+
+# След това правим селекция само на обектите от различните епохи включващи и несигурни дати в съответните епохи:
+
+# Праистория
+
+Pre_Settl_1_2 <- Settlements5muni %>% 
+   filter( Пра.>0 | Палео.>0 | Нео.>0 | РНео.>0 | СНео.>0 | КНео.>0 | Х>0 | РХ>0 | КХ>0) %>% 
+  mutate(Праистория=Пра.+Палео.+Нео.+РНео.+СНео.+КНео.+Х+РХ+КХ)%>% # Бройката съвпада с тази в ГИС
+    dplyr::select(Cat, E_coord:N_coord, Вид, Праистория) # Тук селектирам само колоните, които ще са ми нужни
+
+Pre_Settl_1_2_sf <- st_as_sf(Pre_Settl_1_2, coords = c("E_coord", "N_coord"), crs=4326)%>% # Convert the data frame to an sf object (for working with vector data)
+  st_transform(crs = 32635)
+
+st_crs(Pre_Settl_1_2_sf) # Check the crs = 32635
+
+plot(Teritory); plot(Pre_Settl_1_2_sf, cex=0.5, pch = 19, col="red", add = T) # Plot to see the results; # Бройката съвпада с тази в ГИС = 23
+
+Pre_Settl_1_2
+
+
+
+
+# Неолит:
+
+NEO_Settl_1_2 <- Settlements5muni %>% 
+   filter( Нео.>0 | РНео.>0 | СНео.>0 | КНео.>0) %>% 
+  mutate(Неолит=Нео.+РНео.+СНео.+КНео.)%>%
+  dplyr::select(Cat, E_coord:N_coord, Вид, Неолит) # Тук селектирам само колоните, които ще са ми нужни
+
+NEO_Settl_1_2_sf <- st_as_sf(NEO_Settl_1_2, coords = c("E_coord", "N_coord"), crs=4326)%>% # Convert the data frame to an sf object (for working with vector data)
+  st_transform(crs = 32635)
+
+st_crs(NEO_Settl_1_2_sf) # Check the crs = 32635
+
+plot(Teritory); plot(NEO_Settl_1_2_sf, cex=0.5, pch = 19, col="red", add = T) # Plot to see the results; # Бройката съвпада с тази в ГИС = 6  
+
+NEO_Settl_1_2_sf
+
+
+
+
+# Халколит:
+
+CHALCO_Settl_1_2 <- Settlements5muni %>% 
+   filter( Х>0 | РХ>0 | КХ>0) %>% 
+  mutate(Халколит=Х+РХ+КХ)%>%
+  dplyr::select(Cat, E_coord:N_coord, Вид, Халколит) # Тук селектирам само колоните, които ще са ми нужни
+
+CHALCO_Settl_1_2_sf <- st_as_sf(CHALCO_Settl_1_2, coords = c("E_coord", "N_coord"), crs=4326)%>% # Convert the data frame to an sf object (for working with vector data)
+  st_transform(crs = 32635)
+
+st_crs(CHALCO_Settl_1_2_sf) # Check the crs = 32635
+
+plot(Teritory); plot(CHALCO_Settl_1_2_sf, cex=0.5, pch = 19, col="red", add = T) # Plot to see the results; # Бройката съвпада с тази в ГИС=13
+
+CHALCO_Settl_1_2_sf
+
+
+
+# Бронзова епоха
+
+BA_Settl_1_2 <- Settlements5muni %>% 
+   filter( БЕ>0|РБЕ>0|РБЕ1>0|РБЕ2>0|РБЕ3>0|СБЕ>0|КБЕ>0) %>% 
+  mutate(Бронз=БЕ+РБЕ+РБЕ1+РБЕ2+РБЕ3+СБЕ+КБЕ)%>% # Бройката съвпада с тази в ГИС
+  dplyr::select(Cat, E_coord:N_coord, Вид, Бронз) # Тук селектирам само колоните, които ще са ми нужни
+
+BA_Settl_1_2_sf <- st_as_sf(BA_Settl_1_2, coords = c("E_coord", "N_coord"), crs=4326)%>% # Convert the data frame to an sf object (for working with vector data)
+  st_transform(crs = 32635)
+
+st_crs(BA_Settl_1_2_sf) # Check the crs = 32635
+
+plot(Teritory); plot(BA_Settl_1_2_sf, cex=0.5, pch = 19, col="red", add = T) # Plot to see the results; # Бройката съвпада с тази в ГИС = 13
+  
+BA_Settl_1_2_sf
+
+
+
+# Раннобронзова
+  
+EBA_Settl_1_2 <- Settlements5muni %>% 
+   filter( РБЕ>0|РБЕ1>0|РБЕ2>0|РБЕ3>0) %>% 
+  mutate(Раннобронзова=РБЕ+РБЕ1+РБЕ2+РБЕ3)%>%
+  dplyr::select(Cat, E_coord:N_coord, Вид, Раннобронзова) # Тук селектирам само колоните, които ще са ми нужни
+
+EBA_Settl_1_2_sf <- st_as_sf(EBA_Settl_1_2, coords = c("E_coord", "N_coord"), crs=4326)%>% # Convert the data frame to an sf object (for working with vector data)
+  st_transform(crs = 32635)
+
+st_crs(EBA_Settl_1_2_sf) # Check the crs = 32635
+
+plot(Teritory); plot(EBA_Settl_1_2_sf, cex=0.5, pch = 19, col="red", add = T) # Plot to see the results; # Бройката съвпада с тази в ГИС = 8
+
+EBA_Settl_1_2_sf
+
+
+
+  
+# СБЕ няма регистрирани обекти
+
+
+  
+# КБЕ няма други подпериоди, така че за нея ще използвам колоната КБЕ. Когато селектираш обектите от този период, не забравяй, че тук не си използвал мутейт, и ако искаш да избереш само тези с точна дата, трябва да е == 1, а ако искаш да включиш и тези с несигурна дата, трябва да филтрираш с >= 1  
+
+LBA_Settl_1_2 <- Settlements5muni %>% 
+   filter( КБЕ>0) %>% 
+  dplyr::select(Cat, E_coord:N_coord, Вид, КБЕ) # Тук селектирам само колоните, които ще са ми нужни
+
+LBA_Settl_1_2_sf <- st_as_sf(LBA_Settl_1_2, coords = c("E_coord", "N_coord"), crs=4326)%>% # Convert the data frame to an sf object (for working with vector data)
+  st_transform(crs = 32635)
+
+st_crs(LBA_Settl_1_2_sf) # Check the crs = 32635
+
+plot(Teritory); plot(LBA_Settl_1_2_sf, cex=0.5, pch = 19, col="red", add = T) # Plot to see the results; # Бройката съвпада с тази в ГИС = 2
+
+LBA_Settl_1_2_sf
+
+
+
+
+  
+# Желязна епоха
+
+IA_Settl_1_2 <- Settlements5muni %>% 
+  filter( ЖЕ>0 | РЖЕ>0 | РЖЕ1>0 | РЖЕ2>0 | КЖЕ>0 | КЖЕ1>0 | КЖЕ2>0 | К>0 | Ел.>0 | РЕл.>0 | КЕл.>0  ) %>% 
+  mutate(Желязна=ЖЕ+РЖЕ+РЖЕ1+РЖЕ2+КЖЕ+КЖЕ1+КЖЕ2+К+Ел.+РЕл.+КЕл.)%>% 
+  dplyr::select(Cat, E_coord:N_coord, Вид, Желязна) # Тук селектирам само колоните, които ще са ми нужни
+
+IA_Settl_1_2_sf <- st_as_sf(IA_Settl_1_2, coords = c("E_coord", "N_coord"), crs=4326)%>% # Convert the data frame to an sf object (for working with vector data)
+  st_transform(crs = 32635)
+
+st_crs(IA_Settl_1_2_sf) # Check the crs = 32635
+
+plot(Teritory); plot(IA_Settl_1_2_sf, cex=0.5, pch = 19, col="red", add = T) # Plot to see the results; # Не съвпадат. Тук са 86, а в ГИС излизат 87. Проблемът идва от обект кат. № 1432, който в АКБ е отбелязан, че се намира в обл. Пловдив, общ. Брезово, земл. Розовец, а в действителност той попада в Александрово, община Павел баня. Когато направя филтер за петте общини в Р, този обект не е включен, но когато направя Select by Location в ГИС, той попада в общ. Павел баня, тъй като координатите му са там. Всъщност той е на границата.
+  
+IA_Settl_1_2_sf
+
+
+
+
+# Ранножелязна:
+
+EIA_Settl_1_2 <- Settlements5muni %>% 
+  filter( РЖЕ>0 | РЖЕ1>0 | РЖЕ2>0) %>% 
+  mutate(Ранножелязна=РЖЕ+РЖЕ1+РЖЕ2)%>% 
+  dplyr::select(Cat, E_coord:N_coord, Вид, Ранножелязна) # Тук селектирам само колоните, които ще са ми нужни
+
+EIA_Settl_1_2_sf <- st_as_sf(EIA_Settl_1_2, coords = c("E_coord", "N_coord"), crs=4326)%>% # Convert the data frame to an sf object (for working with vector data)
+  st_transform(crs = 32635)
+
+st_crs(EIA_Settl_1_2_sf) # Check the crs = 32635
+
+plot(Teritory); plot(EIA_Settl_1_2_sf, cex=0.5, pch = 19, col="red", add = T) # Plot to see the results; # Резултатите съвпадат с ГИС = 18
+
+EIA_Settl_1_2_sf
+
+
+
+
+  
+# Късножелязна
+
+LIA_Settl_1_2 <- Settlements5muni %>% 
+  filter( КЖЕ>0 | КЖЕ1>0 | КЖЕ2>0 | К>0 | Ел.>0 | РЕл.>0 | КЕл.>0  ) %>% 
+  mutate(Късножелязна=КЖЕ+КЖЕ1+КЖЕ2+К+Ел.+РЕл.+КЕл.)%>%
+  dplyr::select(Cat, E_coord:N_coord, Вид, Късножелязна) # Тук селектирам само колоните, които ще са ми нужни
+
+LIA_Settl_1_2_sf <- st_as_sf(LIA_Settl_1_2, coords = c("E_coord", "N_coord"), crs=4326)%>% # Convert the data frame to an sf object (for working with vector data)
+  st_transform(crs = 32635)
+
+st_crs(LIA_Settl_1_2_sf) # Check the crs = 32635
+
+plot(Teritory); plot(LIA_Settl_1_2_sf, cex=0.5, pch = 19, col="red", add = T) # Plot to see the results; # Не съвпадат. Тук са 75, а в ГИС излизат 76. Проблемът идва от обект кат. № 1432, който в АКБ е отбелязан, че се намира в обл. Пловдив, общ. Брезово, земл. Розовец, а в действителност той попада в Александрово, община Павел баня. Когато направя филтер за петте общини в Р, този обект не е включен, но когато направя Select by Location в ГИС, той попада в общ. Павел баня, тъй като координатите му са там. Всъщност той е на границата. 
+  
+LIA_Settl_1_2_sf
+
+
+
+
+# Класика
+
+
+
+
+# Елинизъм
+
+HELLEN_Settl_1_2 <- Settlements5muni %>% 
+  filter( Ел.>0 | РЕл.>0 | КЕл.>0  ) %>% 
+  mutate(Елинизъм=Ел.+РЕл.+КЕл.)%>% 
+  dplyr::select(Cat, E_coord:N_coord, Вид, Елинизъм) # Тук селектирам само колоните, които ще са ми нужни
+
+HELLEN_Settl_1_2_sf <- st_as_sf(HELLEN_Settl_1_2, coords = c("E_coord", "N_coord"), crs=4326)%>% # Convert the data frame to an sf object (for working with vector data)
+  st_transform(crs = 32635)
+
+st_crs(HELLEN_Settl_1_2_sf) # Check the crs = 32635
+
+plot(Teritory); plot(HELLEN_Settl_1_2_sf, cex=0.5, pch = 19, col="red", add = T) # Plot to see the results; # Не съвпадат. Тук са 34, а в ГИС излизат 35. Проблемът идва от обект кат. № 1432, който в АКБ е отбелязан, че се намира в обл. Пловдив, общ. Брезово, земл. Розовец, а в действителност той попада в Александрово, община Павел баня. Когато направя филтер за петте общини в Р, този обект не е включен, но когато направя Select by Location в ГИС, той попада в общ. Павел баня, тъй като координатите му са там. Всъщност той е на границата
+
+HELLEN_Settl_1_2_sf
+
+
+
+
+  
+# РЕ. За римската епоха няма други подпериоди, така че за него ще използвам колоната РЕ. Когато селектираш обектите от този период, не забравяй, че тук не си използвал мутейт, и ако искаш да избереш само тези с точна дата, трябва да е == 1, а ако искаш да включиш и тези с несигурна дата, трябва да филтрираш с >= 1 или >0
+
+RP_Settl_1_2 <- Settlements5muni %>% 
+  filter(РЕ>0) %>% 
+  dplyr::select(Cat, E_coord:N_coord, Вид, РЕ) # Тук селектирам само колоните, които ще са ми нужни
+
+RP_Settl_1_2_sf <- st_as_sf(RP_Settl_1_2, coords = c("E_coord", "N_coord"), crs=4326)%>% # Convert the data frame to an sf object (for working with vector data)
+  st_transform(crs = 32635) # Бройката съвпада с тази в ГИС = 35
+
+st_crs(RP_Settl_1_2_sf) # Check the crs = 32635
+
+plot(Teritory); plot(RP_Settl_1_2_sf, cex=0.5, pch = 19, col="red", add = T) # Plot to see the results;  # Бройката съвпада с тази в ГИС = 43
+
+RP_Settl_1_2_sf
+
+
+
+  
+# КРЕ. За късноримската епоха няма други подпериоди, така че за него ще използвам колоната КРЕ. Когато селектираш обектите от този период, не забравяй, че тук не си използвал мутейт, и ако искаш да избереш само тези с точна дата, трябва да е == 1, а ако искаш да включиш и тези с несигурна дата, трябва да филтрираш с >= 1
+
+LRP_Settl_1_2 <- Settlements5muni %>% 
+  filter(КРЕ>0) %>% 
+  dplyr::select(Cat, E_coord:N_coord, Вид, КРЕ) # Тук селектирам само колоните, които ще са ми нужни
+
+LRP_Settl_1_2_sf <- st_as_sf(LRP_Settl_1_2, coords = c("E_coord", "N_coord"), crs=4326)%>% # Convert the data frame to an sf object (for working with vector data)
+  st_transform(crs = 32635) 
+
+st_crs(LRP_Settl_1_2_sf) # Check the crs = 32635
+
+plot(Teritory); plot(LRP_Settl_1_2_sf, cex=0.5, pch = 19, col="red", add = T) # Plot to see the results; # Бройката съвпада с тази в ГИС = 19
+
+LRP_Settl_1_2_sf
+
+
+
+
+# Късноантична:
+
+LA_Settl_1_2 <- Settlements5muni %>% 
+  filter( КА>0 | КРЕ>0 |РВ>0  ) %>% 
+  mutate(Късноантична=КА+КРЕ+РВ)%>% 
+  dplyr::select(Cat, E_coord:N_coord, Вид, Късноантична) # Тук селектирам само колоните, които ще са ми нужни
+
+LA_Settl_1_2_sf <- st_as_sf(LA_Settl_1_2, coords = c("E_coord", "N_coord"), crs=4326)%>% # Convert the data frame to an sf object (for working with vector data)
+  st_transform(crs = 32635)
+
+st_crs(LA_Settl_1_2_sf) # Check the crs = 32635
+
+plot(Teritory); plot(LA_Settl_1_2_sf, cex=0.5, pch = 19, col="red", add = T) # Plot to see the results; # Бройката съвпада с тази в ГИС = 69 
+
+LA_Settl_1_2_sf
+    
+
+
+
+    
+
+# Средновеквие (без Късното):
+
+MA_XIV_Settl_1_2 <- Settlements5muni %>% 
+  filter( Ср.>0 | РСр.>0 | ЗСр.>0 | ПБЦ>0 | ВБЦ>0  ) %>% 
+  mutate(СредновековиеXIV=Ср.+РСр.+ЗСр.+ПБЦ+ВБЦ)%>%
+  dplyr::select(Cat, E_coord:N_coord, Вид, СредновековиеXIV) # Тук селектирам само колоните, които ще са ми нужни
+
+MA_XIV_Settl_1_2_sf <- st_as_sf(MA_XIV_Settl_1_2, coords = c("E_coord", "N_coord"), crs=4326)%>% # Convert the data frame to an sf object (for working with vector data)
+  st_transform(crs = 32635)
+
+st_crs(MA_XIV_Settl_1_2_sf) # Check the crs = 32635
+
+plot(Teritory); plot(MA_XIV_Settl_1_2_sf, cex=0.5, pch = 19, col="red", add = T) # Plot to see the results; # Бройката съвпада с тази в ГИС = 88
+
+MA_XIV_Settl_1_2_sf
+
+
+
+# Средновеквие (с Късното)
+
+MA_XVII_Settl_1_2 <- Settlements5muni %>% 
+  filter( Ср.>0 | РСр.>0 | ЗСр.>0 | КСр.>0 | ПБЦ>0 | ВБЦ>0  ) %>% 
+  mutate(СредновековиеXVII=Ср.+РСр.+ЗСр.+КСр.+ПБЦ+ВБЦ)%>%
+  dplyr::select(Cat, E_coord:N_coord, Вид, СредновековиеXVII) # Тук селектирам само колоните, които ще са ми нужни
+
+MA_XVII_Settl_1_2_sf <- st_as_sf(MA_XVII_Settl_1_2, coords = c("E_coord", "N_coord"), crs=4326)%>% # Convert the data frame to an sf object (for working with vector data)
+  st_transform(crs = 32635)
+
+st_crs(MA_XVII_Settl_1_2_sf) # Check the crs = 32635
+
+plot(Teritory); plot(MA_XVII_Settl_1_2_sf, cex=0.5, pch = 19, col="red", add = T) # Plot to see the results; # Бройката съвпада с тази в ГИС = 136
+
+MA_XVII_Settl_1_2_sf
+
+
+
+
+  
+# Ранно средновековие
+
+EMA_Settl_1_2 <- Settlements5muni %>% 
+  filter( РСр.>0 | ПБЦ>0  ) %>% 
+  mutate(Ранноср.=РСр.+ПБЦ)%>%
+  dplyr::select(Cat, E_coord:N_coord, Вид, Ранноср.) # Тук селектирам само колоните, които ще са ми нужни
+
+EMA_Settl_1_2_sf <- st_as_sf(EMA_Settl_1_2, coords = c("E_coord", "N_coord"), crs=4326)%>% # Convert the data frame to an sf object (for working with vector data)
+  st_transform(crs = 32635)
+
+st_crs(EMA_Settl_1_2_sf) # Check the crs = 32635
+
+plot(Teritory); plot(EMA_Settl_1_2_sf, cex=0.5, pch = 19, col="red", add = T) # Plot to see the results; # Бройката съвпада с тази в ГИС = 13. Забележи колко скача тук бройката. В EMA_Settl_1 обектите са 8! Това е заради синдрома с монетите.  
+
+EMA_Settl_1_2_sf
+
+
+
+
+# Зряло средновековие
+
+HMA_Settl_1_2 <- Settlements5muni %>% 
+  filter( ЗСр.>0 | ВБЦ>0  ) %>% 
+  mutate(Зрялоср.=ЗСр.+ВБЦ)%>%
+  dplyr::select(Cat, E_coord:N_coord, Вид, Зрялоср.) # Тук селектирам само колоните, които ще са ми нужни
+
+HMA_Settl_1_2_sf <- st_as_sf(HMA_Settl_1_2, coords = c("E_coord", "N_coord"), crs=4326)%>% # Convert the data frame to an sf object (for working with vector data)
+  st_transform(crs = 32635)
+
+st_crs(HMA_Settl_1_2_sf) # Check the crs = 32635
+
+plot(Teritory); plot(HMA_Settl_1_2_sf, cex=0.5, pch = 19, col="red", add = T) # Plot to see the results; # Бройката съвпада с тази в ГИС = 58
+
+HMA_Settl_1_2_sf
+
+
+
+
+
+# Късно средновековие
+
+LMA_Settl_1_2 <- Settlements5muni %>% 
+  filter( КСр.>0  ) %>% 
+  dplyr::select(Cat, E_coord:N_coord, Вид, КСр.) # Тук селектирам само колоните, които ще са ми нужни
+
+LMA_Settl_1_2_sf <- st_as_sf(LMA_Settl_1_2, coords = c("E_coord", "N_coord"), crs=4326)%>% # Convert the data frame to an sf object (for working with vector data)
+  st_transform(crs = 32635)
+
+st_crs(LMA_Settl_1_2_sf) # Check the crs = 32635
+
+plot(Teritory); plot(LMA_Settl_1_2_sf, cex=0.5, pch = 19, col="red", add = T) # Plot to see the results; # Бройката съвпада с тази в ГИС = 74
+
+LMA_Settl_1_2_sf
+
+```
+
+## Point Pattern Analysis
+### Manualy calculated
+
+```{r}
+
+# Това са тестовите територий, в които ще се извърши point pattern анализа
+
+# Rectangular <-st_read("../data/Rectangular.shp")%>%
+  # as_Spatial()
+
+# Make a simple feature 'Rectangular' polygon into an owin object
+
+# Rectangular_w <- as.owin.SpatialPolygons(Rectangular)
 # see what it looks like
 
-plot(Teritory); plot(Box1, border="green", add=TRUE); plot(Box2, border="yellow", add=TRUE); plot(Municipal, border="red", add=TRUE); plot(Rectangular, border="blue", add=TRUE); plot(PreSettlemnts1$geometry, cex=0.1, pch = 16, col="firebrick", add = T)
+```
+
+```{r}
+
+# After that load and make the boxes as owin class
+
+Box1 <-st_read("../data/Box1.shp")
+Box1_w <- as.owin(Box1)
+plot(Box1_w)
+
+Box2 <-st_read("../data/Box2.shp")
+Box2_w <- as.owin(Box2)
+plot(Box2_w)
+
+Municipal <-st_read("../data/Municipal.shp")
+Municipal_w <- as.owin(Municipal)
+plot(Municipal_w)
+
+Rectangular <-st_read("../data/Rectangular.shp")
+Rectangular_w <- as.owin(Rectangular)
+plot(Rectangular_w)
+
+# Ploting the territory with the certain dated settlements 
+plot(Teritory); plot(Box1$geometry, border="green", add=TRUE); plot(Box2$geometry, border="yellow", add=TRUE); plot(Municipal$geometry, border="red", add=TRUE); plot(Rectangular$geometry, border="blue", add=TRUE)
+
+```
+
+#### Prehistoric
+##### Settlements = 1 
+
+```{r}
+# see what it looks like
+
+plot(Teritory); plot(Box1$geometry, border="green", add=TRUE); plot(Box2$geometry, border="yellow", add=TRUE); plot(Municipal$geometry, border="red", add=TRUE); plot(Rectangular$geometry, border="blue", add=TRUE); plot(Pre_Settl_1_sf, cex=0.1, pch = 16, col="firebrick", add = T)
+
+Pre_Settl_1_sf
 
 ```
 
@@ -468,12 +865,12 @@ plot(Teritory); plot(Box1, border="green", add=TRUE); plot(Box2, border="yellow"
 
 # Finally, create the ppp from settlements within Municipal box
 
-x <- st_coordinates(PreSettlemnts1)[,1]
-y <- st_coordinates(PreSettlemnts1)[,2]
+x <- st_coordinates(Pre_Settl_1_sf)[,1]
+y <- st_coordinates(Pre_Settl_1_sf)[,2]
 plot(Municipal_w)
-plot(as.ppp(PreSettlemnts1),add = T)
+plot(as.ppp(Pre_Settl_1_sf),add = T)
 
-PreSettlemnts1_ppp <- as.ppp(st_coordinates(PreSettlemnts1), W=Municipal_w)
+PreSettlemnts1_ppp <- as.ppp(st_coordinates(Pre_Settl_1_sf), W=Municipal_w)
 
 PreSettlemnts1_ppp
 
@@ -492,35 +889,84 @@ mean_nn <- mean(nnd_PreSettlemnts1)
 
 # RAndom mean distances in your study area (Municipal)
 
-mean_dist <- 0.5*sqrt(st_area(st_as_sf(Municipal))/nrow(PreSettlemnts1))
+mean_dist <- 0.5*sqrt(st_area(st_as_sf(Municipal))/nrow(Pre_Settl_1))
+
+r <- mean_nn/mean_dist
+
+# The box Municipal is perhaps too big, making the ratio clustered at 0.43, so we need a different box
+
+r # = 0.4344097 [1/m]
+
+```
+
+##### Settlements = 1+2 
+
+```{r}
+# see what it looks like
+
+plot(Teritory); plot(Box1$geometry, border="green", add=TRUE); plot(Box2$geometry, border="yellow", add=TRUE); plot(Municipal$geometry, border="red", add=TRUE); plot(Rectangular$geometry, border="blue", add=TRUE); plot(Pre_Settl_1_2_sf, cex=0.1, pch = 16, col="firebrick", add = T)
+
+Pre_Settl_1_2_sf
+
+```
+
+
+```{r}
+
+# Finally, create the ppp from settlements within Municipal box
+
+x <- st_coordinates(Pre_Settl_1_2_sf)[,1]
+y <- st_coordinates(Pre_Settl_1_2_sf)[,2]
+plot(Municipal_w)
+plot(as.ppp(Pre_Settl_1_2_sf),add = T)
+
+PreSettlemnts1_2_ppp <- as.ppp(st_coordinates(Pre_Settl_1_2_sf), W=Municipal_w)
+
+PreSettlemnts1_2_ppp
+
+plot(PreSettlemnts1_2_ppp)
+
+```
+
+
+```{r}
+
+# Calculate nearest-neighbor distances for PreSettlemnts1 (the certain dated Prehistoric settlements) data using Municipalityes (the boundaries of the examined territory/ Kazanlak Valley) as a box 
+
+nnd_PreSettlemnts1_2 <- nndist(PreSettlemnts1_2_ppp)
+
+mean_nn <- mean(nnd_PreSettlemnts1_2)
+
+# RAndom mean distances in your study area (Municipal)
+
+mean_dist <- 0.5*sqrt(st_area(st_as_sf(Municipal))/nrow(Pre_Settl_1_2))
 
 r <- mean_nn/mean_dist
 # THe box Municipal is perhaps too big, making the ratio clustered at 0.43, so we need a different box
 
+r # = 0.4344097 [1/m] Няма разлика, защото за Pre_Settl_1 и Pre_Settl_1_2 бройката е еднаква = 23 обекта
+
+
 ```
-## LIA
+
+
+#### LIA
+##### Settlements = 1 
 
 ```{r}
 
-# Селектираме само късножелезните обекти от файла Sites1_sf, който съдържа само обекти от типа селища, датирани със сигурност в КЖЕ
-
-LIASettlemnts1 <- Settlements1_sf %>%
-  filter(Късножелязна>=1)
-
-# LIASettlemnts1_2 <- Settlements1_2_sf %>% filter(Късножелязна>=1) # Няма разлика в бройката между само сигурно датираните в КЖЕ селищата и тези, които са с несигурни дати.
-
 # see what it looks like
 
-plot(Teritory); plot(Box1, border="green", add=TRUE); plot(Box2, border="yellow", add=TRUE); plot(Municipal, border="red", add=TRUE); plot(Rectangular, border="blue", add=TRUE); plot(LIASettlemnts1$geometry, cex=0.1, pch = 16, col="firebrick", add = T)
+plot(Teritory); plot(Box1$geometry, border="green", add=TRUE); plot(Box2$geometry, border="yellow", add=TRUE); plot(Municipal$geometry, border="red", add=TRUE); plot(Rectangular$geometry, border="blue", add=TRUE); plot(LIA_Settl_1_sf, cex=0.1, pch = 16, col="firebrick", add = T)
 
 # Finally, create the ppp from settlements within Municipal box
 
-x <- st_coordinates(LIASettlemnts1)[,1]
-y <- st_coordinates(LIASettlemnts1)[,2]
+x <- st_coordinates(LIA_Settl_1_sf)[,1]
+y <- st_coordinates(LIA_Settl_1_sf)[,2]
 plot(Municipal_w)
-plot(as.ppp(LIASettlemnts1),add = T)
+plot(as.ppp(LIA_Settl_1_sf),add = T)
 
-LIASettlemnts1_ppp <- as.ppp(st_coordinates(LIASettlemnts1), W=Municipal_w)
+LIASettlemnts1_ppp <- as.ppp(st_coordinates(LIA_Settl_1_sf), W=Municipal_w)
 
 LIASettlemnts1_ppp
 
@@ -534,298 +980,828 @@ mean_nn <- mean(nnd_LIASettlemnts1)
 
 # RAndom mean distances in your study area (Municipal)
 
-mean_dist <- 0.5*sqrt(st_area(st_as_sf(Municipal))/nrow(LIASettlemnts1))
+mean_dist <- 0.5*sqrt(st_area(st_as_sf(Municipal))/nrow(LIA_Settl_1))
 
 r <- mean_nn/mean_dist
 
-# The box Municipal is perhaps too big, making the ratio clustered at 0.43, so we need a different box
+r # it should be 0.6135303 [1/m] 
 
 ```
+
+##### Settlements = 1+2 
 
 ```{r}
 
-# КБЕ. Резултатите съвпадат с резултатите от ГИС.
+# see what it looks like
 
-LBESettlemnts1 <- Settlements1 %>%
-  filter(КБЕ==1)
+plot(Teritory); plot(Box1$geometry, border="green", add=TRUE); plot(Box2$geometry, border="yellow", add=TRUE); plot(Municipal$geometry, border="red", add=TRUE); plot(Rectangular$geometry, border="blue", add=TRUE); plot(LIA_Settl_1_2_sf, cex=0.1, pch = 16, col="firebrick", add = T)
 
-LBElemnts1_2 <- Settlements1_2 %>%
-  filter(КБЕ>=1)
+# Finally, create the ppp from settlements within Municipal box
 
-LBESettlemnts1
+x <- st_coordinates(LIA_Settl_1_2_sf)[,1]
+y <- st_coordinates(LIA_Settl_1_2_sf)[,2]
+plot(Municipal_w)
+plot(as.ppp(LIA_Settl_1_2_sf),add = T)
 
-LBElemnts1_2
+LIASettlemnts1_2_ppp <- as.ppp(st_coordinates(LIA_Settl_1_2_sf), W=Municipal_w)
 
+LIASettlemnts1_2_ppp
 
+plot(LIASettlemnts1_2_ppp)
 
+# Calculate nearest-neighbor distances for PreSettlemnts1 (the certain dated Prehistoric settlements) data using Municipalityes (the boundaries of the examined territory/ Kazanlak Valley) as a box 
 
+nnd_LIASettlemnts1_2 <- nndist(LIASettlemnts1_2_ppp)
 
-# РЕ. Резултатите съвпадат с резултатите от ГИС.
+mean_nn <- mean(nnd_LIASettlemnts1_2)
 
-RPSettlemnts1 <- Settlements1 %>%
-  filter(РЕ==1)
+# RAndom mean distances in your study area (Municipal)
 
-RPlemnts1_2 <- Settlements1_2 %>%
-  filter(РЕ>=1)
+mean_dist <- 0.5*sqrt(st_area(st_as_sf(Municipal))/nrow(LIA_Settl_1_2))
 
-RPSettlemnts1
 
-RPlemnts1_2
+r <- mean_nn/mean_dist
 
+r # 0.5916988 [1/m]
 
+```
 
 
-# КРЕ. Резултатите съвпадат с резултатите от ГИС.
+## Creating function
 
-LRPSettlemnts1 <- Settlements1 %>%
-  filter(КРЕ==1)
+This function is created by Adela so I can calculate the NN index for all epoches with one push of the button 
 
-LRPlemnts1_2 <- Settlements1_2 %>%
-  filter(КРЕ>=1)
+```{r function}
 
-LRPSettlemnts1
+# For testing purposes (delete)
+# period_sites <- RP_Settl_1_sf %>% dplyr::filter(РЕ==1)
+# study_area <- Box1
 
-LRPlemnts1_2
+# r <- getNNratio(period_sites, Box1)
 
 
+# result <- NULL
+getNNratio <- function(period_sites, study_area){  # these two arguments should be sf objects in the same CRS
+  library(sf)
+  library(spatstat)
+  st_crs(period_sites)==st_crs(study_area)
+  # create an owin object out of the study area polygon
+  window <- as.owin(study_area)
+  # create ppp object out of period-sites that fall within the study area
+ period_sites_in_w<- period_sites$geometry %>%
+     st_intersection(study_area)
+period_sites_ppp <- period_sites_in_w %>%
+     st_coordinates() %>%
+     as.ppp(W = window)
+  # run NNA analysis on the ppp objects
+  observed_dist <- mean(nndist(period_sites_ppp))
+ 
+  expected_dist <- 0.5*sqrt(st_area(study_area)/nrow(st_sf(period_sites_in_w)))
+  r <- observed_dist/expected_dist
+  # You can also run this on a linear network (e.g. Tundzha) after creating linnet , a linear network from it
+  # period_sites_lpp <- period_sites$geometry %>%
+  #    st_intersection(study_area) %>%
+  #    st_coordinates() %>%
+  #    as.lpp(L = window)
+  # mean_nn_linear <- mean(nndist.lpp(period_sites_lpp))
+  # rlin <- mean_nn_linear/mean_dist
+ 
+  # result <- rbind(result, r)
+  # result
+  # plot points within the window with a result
+  # plot(period_sites_ppp, main = paste0("NN ratio for the ",quote(period_sites), " is ", round(result,2)))
+  # plot all the points (inclusive of those outside the window)
+  #plot(period_sites$geometry, main = paste0("NN ratio inside the bounding polygon is ", round(r,2))); plot(study_area$geometry,border = "blue", add = T)
+  
+   #plot(study_area$geometry,border = "blue"); plot(period_sites$geometry, main = paste0("NN ratio inside the bounding polygon is ", round(r,2)), add=TRUE) # I (AG) just added this because I want to see what is inside the box. That's why we have to outcomes
+   
+   r
+}
 
+# r <- getNNratio(my_period_sites, my_Box) # How to run this function
 
-# Праистория. Резултатите съвпадат с резултатите от ГИС.
 
-PreSettlemnts1 <- Settlements1 %>%
-  filter(Праистория>=1)
+```
 
-PreSlemnts1_2 <- Settlements1_2 %>%
-  filter(Праистория>=1)
+NN index or ratio falls between 0 to 2.19. Everiting ouside this ratio is incorrect.   
+Close to 0 means more clustered
+1 means random
+above 1 is dispersed (competition)
 
-PreSettlemnts1
+### Results
+#### Prehistoric
 
-PreSlemnts1_2
+```{r result}
 
+# Box 1
 
+getNNratio(Pre_Settl_1_sf, Box1) # Only certain dated settlements
 
+getNNratio(Pre_Settl_1_2_sf, Box1) # Including the uncertain dated settlements
 
-# Неолит. Резултатите съвпадат с резултатите от ГИС.
+```
 
-NeoSettlemnts1 <- Settlements1 %>%
-  filter(Неолит>=1)
+```{r result}
 
-NeoSlemnts1_2 <- Settlements1_2 %>%
-  filter(Неолит>=1)
+# Box 2
 
-NeoSettlemnts1
+getNNratio(Pre_Settl_1_sf, Box2) # Only certain dated settlements
 
-NeoSlemnts1_2
+getNNratio(Pre_Settl_1_2_sf, Box2) # Including the uncertain dated settlement
 
+```
 
+```{r result}
 
+# Rectangular
 
+getNNratio(Pre_Settl_1_sf, Rectangular) # Only certain dated settlements
 
-# Халколит. РЕЗУЛТАТИТЕ НЕ СЪВПАДАТ С ТЕЗИ ОТ ГИС. Settlements1 трябва да бъдат 12, а Settlements1_2 13. В случая двата вида са по 13. Някъде се получава грешка при mutate()... 
+getNNratio(Pre_Settl_1_2_sf, Rectangular) # Including the uncertain dated settlement
 
-HalcSettlemnts1 <- Settlements1 %>%
-  filter(Халколит>=1)
+```
 
-HalcSlemnts1_2 <- Settlements1_2 %>%
-  filter(Халколит>=1)
+```{r result}
+# Municipal
 
-HalcSettlemnts1 # Трябва да са 12
+getNNratio(Pre_Settl_1_sf, Municipal) # Only certain dated settlements
 
-HalcSlemnts1_2 # Трябва да са 13
-
-
-
-# БЕ. РЕЗУЛТАТИТЕ НЕ СЪВПАДАТ С ТЕЗИ ОТ ГИС. Settlements1 трябва да бъдат 12, а Settlements1_2 13. В случая двата вида са по 13. Някъде се получава грешка при mutate()...
-
-BASettlemnts1 <- Settlements1 %>%
-  filter(Бронз>=1)
-
-BASlemnts1_2 <- Settlements1_2 %>%
-  filter(Бронз>=1)
-
-BASettlemnts1 # Трябва да са 12
-
-BASlemnts1_2 # Трябва да са 13
-
-
-
-
-
-# РБЕ. Резултатите съвпадат с резултатите от ГИС. Но това е изкуствено заблуждение. Съвпадението е породено от това, че в КБЕ просто няма обекти с код 2. Проблемът с mutate() си остава. 
-
-EBASettlemnts1 <- Settlements1 %>%
-  filter(Раннобронзова>=1)
-
-EBASlemnts1_2 <- Settlements1_2 %>%
-  filter(Раннобронзова>=1)
-
-EBASettlemnts1
-
-EBASlemnts1_2
-
-
-
-
-
-# ЖЕ. РЕЗУЛТАТИТЕ НЕ СЪВПАДАТ С ТЕЗИ ОТ ГИС. Settlements1 трябва да бъдат 81, а Settlements1_2 87. В случая двата вида са по 86. Даже и едно съвпадение няма. Някъде се получава грешка при mutate()...
-
-IASettlemnts1 <- Settlements1 %>%
-  filter(Желязна>=1)
-
-IASettlemnts1_2 <- Settlements1_2 %>%
-  filter(Желязна>=1)
-
-IASettlemnts1 # Трябва да са 81
-
-IASettlemnts1_2 # Трябва да са 87
-
-
-
-
-
-# РЖЕ. РЕЗУЛТАТИТЕ НЕ СЪВПАДАТ С ТЕЗИ ОТ ГИС. Settlements1 трябва да бъдат 16, а Settlements1_2 18. В случая двата вида са по 18. Някъде се получава грешка при mutate()...
-
-EIASettlemnts1 <- Settlements1 %>%
-  filter(Ранножелязна>=1)
-
-EIASettlemnts1_2 <- Settlements1_2 %>%
-  filter(Ранножелязна>=1)
-
-EIASettlemnts1 # Трябва да са 16
-
-EIASettlemnts1_2 # Трябва да са 18
-
-
-
-
-
-# КЖЕ. РЕЗУЛТАТИТЕ НЕ СЪВПАДАТ С ТЕЗИ ОТ ГИС. Settlements1 трябва да бъдат 71, а Settlements1_2 76. В случая двата вида са по 75. Даже и едно съвпадение няма. Някъде се получава грешка при mutate()...
-
-LIASettlemnts1 <- Settlements1 %>%
-  filter(Късножелязна>=1)
-
-LIASettlemnts1_2 <- Settlements1_2 %>%
-  filter(Късножелязна>=1)
-
-LIASettlemnts1 # Трябва да са 71
-
-LIASettlemnts1_2 # Трябва да са 76
-
-
-
-
-
-# КЖЕ. РЕЗУЛТАТИТЕ НЕ СЪВПАДАТ С ТЕЗИ ОТ ГИС. Settlements1 трябва да бъдат 33, а Settlements1_2 35. В случая двата вида са по 34. Даже и едно съвпадение няма. Някъде се получава грешка при mutate()...
-
-HellSettlemnts1 <- Settlements1 %>%
-  filter(Елинизъм>=1)
-
-HellSettlemnts1_2 <- Settlements1_2 %>%
-  filter(Елинизъм>=1)
-
-HellSettlemnts1 # Трябва да са 33
-
-HellSettlemnts1_2 # Трябва да са 35
-
-
-
-
-
-# KA. РЕЗУЛТАТИТЕ НЕ СЪВПАДАТ С ТЕЗИ ОТ ГИС. Settlements1 трябва да бъдат 63, а Settlements1_2 69. В случая двата вида са по 69. Някъде се получава грешка при mutate()...
-
-LASettlemnts1 <- Settlements1 %>%
-  filter(Късноантична>=1)
-
-LASettlemnts1_2 <- Settlements1_2 %>%
-  filter(Късноантична>=1)
-
-LASettlemnts1 # Трябва да са 63
-
-LASettlemnts1_2 # Трябва да са 69
-
-
-
-
-
-# Средновековие до XIV в. РЕЗУЛТАТИТЕ НЕ СЪВПАДАТ С ТЕЗИ ОТ ГИС. Settlements1 трябва да бъдат 75, а Settlements1_2 88. В случая те са съответно по 86 и 88. Някъде се получава грешка при mutate()...
-
-XIVSettlemnts1 <- Settlements1 %>%
-  filter(СредновековиеXIV>=1)
-
-XIVSettlemnts1_2 <- Settlements1_2 %>%
-  filter(СредновековиеXIV>=1)
-
-XIVSettlemnts1 # Трябва да са 75
-
-XIVSettlemnts1_2 # Трябва да са 88
-
-
-
-
-# Средновековие до XVII в. РЕЗУЛТАТИТЕ НЕ СЪВПАДАТ С ТЕЗИ ОТ ГИС. Settlements1 трябва да бъдат 130, а Settlements1_2 136. В случая те са съответно по 133 и 136. Някъде се получава грешка при mutate()...
-
-XVIISettlemnts1 <- Settlements1 %>%
-  filter(СредновековиеXVII>=1)
-
-XVIISettlemnts1_2 <- Settlements1_2 %>%
-  filter(СредновековиеXVII>=1)
-
-XVIISettlemnts1 # Трябва да са 130
-
-XVIISettlemnts1_2 # Трябва да са 136
-
-
-
-
-
-# Ранно средновековие. РЕЗУЛТАТИТЕ НЕ СЪВПАДАТ С ТЕЗИ ОТ ГИС. Settlements1 трябва да бъдат 8, а Settlements1_2 13. В случая те са по 13. Някъде се получава грешка при mutate()...
-
-EMASettlemnts1 <- Settlements1 %>%
-  filter(Ранноср.>=1)
-
-EMASettlemnts1_2 <- Settlements1_2 %>%
-  filter(Ранноср.>=1)
-
-EMASettlemnts1 # Трябва да са 8
-
-EMASettlemnts1_2 # Трябва да са 13
-
-
-
-
-
-# Зряло средновековие. РЕЗУЛТАТИТЕ НЕ СЪВПАДАТ С ТЕЗИ ОТ ГИС. Settlements1 трябва да бъдат 48, а Settlements1_2 58. В случая те са съответно по 57 и 58. Някъде се получава грешка при mutate()...
-
-HMASettlemnts1 <- Settlements1 %>%
-  filter(Зрялоср.>=1)
-
-HMASettlemnts1_2 <- Settlements1_2 %>%
-  filter(Зрялоср.>=1)
-
-HMASettlemnts1 # Трябва да са 48
-
-HMASettlemnts1_2 # Трябва да са 58
-
-
-
-
-
-# Късно средновековие. Резултатите съвпадат с резултатите от ГИС. Но това е изкуствено заблуждение. Съвпадението е породено от това, че в КБЕ просто няма обекти с код 2. Проблемът с mutate() си остава. 
-
-LMASettlemnts1 <- Settlements1 %>%
-  filter(КСр.==1)
-
-LMASettlemnts1_2 <- Settlements1_2 %>%
-  filter(КСр.>=1)
-
-LMASettlemnts1 # Трябва да са 72
-
-LMASettlemnts1_2 # Трябва да са 74
+getNNratio(Pre_Settl_1_2_sf, Municipal) # Including the uncertain dated settlement
 
 ```
 
 
 
+
+
+
+#### NEO
+
+```{r result}
+
+# Box 1
+
+getNNratio(NEO_Settl_1_sf, Box1) # Only certain dated settlements
+
+getNNratio(NEO_Settl_1_2_sf, Box1) # Including the uncertain dated settlements
+
+```
+
+```{r result}
+
+# Box 2
+
+getNNratio(NEO_Settl_1_sf, Box2) # Only certain dated settlements
+
+getNNratio(NEO_Settl_1_2_sf, Box2) # Including the uncertain dated settlement
+
+```
+
+```{r result}
+
+# Rectangular
+
+getNNratio(NEO_Settl_1_sf, Rectangular) # Only certain dated settlements
+
+getNNratio(NEO_Settl_1_2_sf, Rectangular) # Including the uncertain dated settlement
+
+```
+
+```{r result}
+# Municipal
+
+getNNratio(NEO_Settl_1_sf, Municipal) # Only certain dated settlements
+
+getNNratio(NEO_Settl_1_2_sf, Municipal) # Including the uncertain dated settlement
+
+```
+
+
+
+
+
+
+#### CHALCO
+
+```{r result}
+
+# Box 1
+
+getNNratio(CHALCO_Settl_1_sf, Box1) # Only certain dated settlements
+
+getNNratio(CHALCO_Settl_1_2_sf, Box1) # Including the uncertain dated settlements
+
+```
+
+```{r result}
+
+# Box 2
+
+getNNratio(CHALCO_Settl_1_sf, Box2) # Only certain dated settlements
+
+getNNratio(CHALCO_Settl_1_2_sf, Box2) # Including the uncertain dated settlement
+
+```
+
+```{r result}
+
+# Rectangular
+
+getNNratio(CHALCO_Settl_1_sf, Rectangular) # Only certain dated settlements
+
+getNNratio(CHALCO_Settl_1_2_sf, Rectangular) # Including the uncertain dated settlement
+
+```
+
+```{r result}
+# Municipal
+
+getNNratio(CHALCO_Settl_1_sf, Municipal) # Only certain dated settlements
+
+getNNratio(CHALCO_Settl_1_2_sf, Municipal) # Including the uncertain dated settlement
+
+```
+
+
+#### BA
+
+```{r result}
+
+# Box 1
+
+getNNratio(BA_Settl_1_sf, Box1) # Only certain dated settlements
+
+getNNratio(BA_Settl_1_2_sf, Box1) # Including the uncertain dated settlements
+
+```
+
+```{r result}
+
+# Box 2
+
+getNNratio(BA_Settl_1_sf, Box2) # Only certain dated settlements
+
+getNNratio(BA_Settl_1_2_sf, Box2) # Including the uncertain dated settlement
+
+```
+
+```{r result}
+
+# Rectangular
+
+getNNratio(BA_Settl_1_sf, Rectangular) # Only certain dated settlements
+
+getNNratio(BA_Settl_1_2_sf, Rectangular) # Including the uncertain dated settlement
+
+```
+
+```{r result}
+# Municipal
+
+getNNratio(BA_Settl_1_sf, Municipal) # Only certain dated settlements
+
+getNNratio(BA_Settl_1_2_sf, Municipal) # Including the uncertain dated settlement
+
+```
+
+
+#### EBA 
+```{r result}
+
+# Box 1
+
+getNNratio(EBA_Settl_1_sf, Box1) # Only certain dated settlements
+
+getNNratio(EBA_Settl_1_2_sf, Box1) # Including the uncertain dated settlements
+
+```
+
+```{r result}
+
+# Box 2
+
+getNNratio(EBA_Settl_1_sf, Box2) # Only certain dated settlements
+
+getNNratio(EBA_Settl_1_2_sf, Box2) # Including the uncertain dated settlement
+
+```
+
+```{r result}
+
+# Rectangular
+
+getNNratio(EBA_Settl_1_sf, Rectangular) # Only certain dated settlements
+
+getNNratio(EBA_Settl_1_2_sf, Rectangular) # Including the uncertain dated settlement
+
+```
+
+```{r result}
+# Municipal
+
+getNNratio(EBA_Settl_1_sf, Municipal) # Only certain dated settlements
+
+getNNratio(EBA_Settl_1_2_sf, Municipal) # Including the uncertain dated settlement
+
+```
+
+
+#### LBA
+Само 1/2 точки е безсмислено да се прави ПП за тази епоха
+
+
+#### IA
+
+```{r result}
+
+# Box 1
+
+getNNratio(IA_Settl_1_sf, Box1) # Only certain dated settlements
+
+getNNratio(IA_Settl_1_2_sf, Box1) # Including the uncertain dated settlements
+
+```
+
+```{r result}
+
+# Box 2
+
+getNNratio(IA_Settl_1_sf, Box2) # Only certain dated settlements
+
+getNNratio(IA_Settl_1_2_sf, Box2) # Including the uncertain dated settlement
+
+```
+
+```{r result}
+
+# Rectangular
+
+getNNratio(IA_Settl_1_sf, Rectangular) # Only certain dated settlements
+
+getNNratio(IA_Settl_1_2_sf, Rectangular) # Including the uncertain dated settlement
+
+```
+
+```{r result}
+# Municipal
+
+getNNratio(IA_Settl_1_sf, Municipal) # Only certain dated settlements
+
+getNNratio(IA_Settl_1_2_sf, Municipal) # Including the uncertain dated settlement
+
+```
+
+
+#### ΙΕΑ 
+```{r result}
+
+# Box 1
+
+getNNratio(EIA_Settl_1_sf, Box1) # Only certain dated settlements
+
+getNNratio(EIA_Settl_1_2_sf, Box1) # Including the uncertain dated settlements
+
+```
+
+```{r result}
+
+# Box 2
+
+getNNratio(EIA_Settl_1_sf, Box2) # Only certain dated settlements
+
+getNNratio(EIA_Settl_1_2_sf, Box2) # Including the uncertain dated settlement
+
+```
+
+```{r result}
+
+# Rectangular
+
+getNNratio(EIA_Settl_1_sf, Rectangular) # Only certain dated settlements
+
+getNNratio(EIA_Settl_1_2_sf, Rectangular) # Including the uncertain dated settlement
+
+```
+
+```{r result}
+# Municipal
+
+getNNratio(EIA_Settl_1_sf, Municipal) # Only certain dated settlements
+
+getNNratio(EIA_Settl_1_2_sf, Municipal) # Including the uncertain dated settlement
+
+```
+
+
+#### LIA
+
+```{r result}
+
+# Box 1
+
+getNNratio(LIA_Settl_1_sf, Box1) # Only certain dated settlements
+
+getNNratio(LIA_Settl_1_2_sf, Box1) # Including the uncertain dated settlements
+
+```
+
+```{r result}
+
+# Box 2
+
+getNNratio(LIA_Settl_1_sf, Box2) # Only certain dated settlements
+
+getNNratio(LIA_Settl_1_2_sf, Box2) # Including the uncertain dated settlement
+
+```
+
+```{r result}
+
+# Rectangular
+
+getNNratio(LIA_Settl_1_sf, Rectangular) # Only certain dated settlements
+
+getNNratio(LIA_Settl_1_2_sf, Rectangular) # Including the uncertain dated settlement
+
+```
+
+```{r result}
+# Municipal
+
+getNNratio(LIA_Settl_1_sf, Municipal) # Only certain dated settlements
+
+getNNratio(LIA_Settl_1_2_sf, Municipal) # Including the uncertain dated settlement
+
+```
+
+
+#### HELLEN
+
+```{r result}
+# Box 1
+
+getNNratio(HELLEN_Settl_1_sf, Box1) # Only certain dated settlements
+
+getNNratio(HELLEN_Settl_1_2_sf, Box1) # Including the uncertain dated settlements
+
+```
+
+```{r result}
+
+# Box 2
+
+getNNratio(HELLEN_Settl_1_sf, Box2) # Only certain dated settlements
+
+getNNratio(HELLEN_Settl_1_2_sf, Box2) # Including the uncertain dated settlement
+
+```
+
+```{r result}
+
+# Rectangular
+
+getNNratio(HELLEN_Settl_1_sf, Rectangular) # Only certain dated settlements
+
+getNNratio(HELLEN_Settl_1_2_sf, Rectangular) # Including the uncertain dated settlement
+
+```
+
+```{r result}
+# Municipal
+
+getNNratio(HELLEN_Settl_1_sf, Municipal) # Only certain dated settlements
+
+getNNratio(HELLEN_Settl_1_2_sf, Municipal) # Including the uncertain dated settlement
+
+```
+
+
+#### RP
+
+```{r result}
+# Box 1
+
+getNNratio(RP_Settl_1_sf, Box1) # Only certain dated settlements
+
+getNNratio(RP_Settl_1_2_sf, Box1) # Including the uncertain dated settlements
+
+```
+
+```{r result}
+
+# Box 2
+
+getNNratio(RP_Settl_1_sf, Box2) # Only certain dated settlements
+
+getNNratio(RP_Settl_1_2_sf, Box2) # Including the uncertain dated settlement
+
+```
+
+```{r result}
+
+# Rectangular
+
+getNNratio(RP_Settl_1_sf, Rectangular) # Only certain dated settlements
+
+getNNratio(RP_Settl_1_2_sf, Rectangular) # Including the uncertain dated settlement
+
+```
+
+```{r result}
+# Municipal
+
+getNNratio(RP_Settl_1_sf, Municipal) # Only certain dated settlements
+
+getNNratio(RP_Settl_1_2_sf, Municipal) # Including the uncertain dated settlement
+
+```
+
+
+#### LRP
+
+```{r result}
+# Box 1
+
+getNNratio(LRP_Settl_1_sf, Box1) # Only certain dated settlements
+
+getNNratio(LRP_Settl_1_2_sf, Box1) # Including the uncertain dated settlements
+
+```
+
+```{r result}
+
+# Box 2
+
+getNNratio(LRP_Settl_1_sf, Box2) # Only certain dated settlements
+
+getNNratio(LRP_Settl_1_2_sf, Box2) # Including the uncertain dated settlement
+
+```
+
+```{r result}
+
+# Rectangular
+
+getNNratio(LRP_Settl_1_sf, Rectangular) # Only certain dated settlements
+
+getNNratio(LRP_Settl_1_2_sf, Rectangular) # Including the uncertain dated settlement
+
+```
+
+```{r result}
+# Municipal
+
+getNNratio(LRP_Settl_1_sf, Municipal) # Only certain dated settlements
+
+getNNratio(LRP_Settl_1_2_sf, Municipal) # Including the uncertain dated settlement
+
+```
+
+
+#### LA
+
+```{r result}
+# Box 1
+
+getNNratio(LA_Settl_1_sf, Box1) # Only certain dated settlements
+
+getNNratio(LA_Settl_1_2_sf, Box1) # Including the uncertain dated settlements
+
+```
+
+```{r result}
+
+# Box 2
+
+getNNratio(LA_Settl_1_sf, Box2) # Only certain dated settlements
+
+getNNratio(LA_Settl_1_2_sf, Box2) # Including the uncertain dated settlement
+
+```
+
+```{r result}
+
+# Rectangular
+
+getNNratio(LA_Settl_1_sf, Rectangular) # Only certain dated settlements
+
+getNNratio(LA_Settl_1_2_sf, Rectangular) # Including the uncertain dated settlement
+
+```
+
+```{r result}
+# Municipal
+
+getNNratio(LA_Settl_1_sf, Municipal) # Only certain dated settlements
+
+getNNratio(LA_Settl_1_2_sf, Municipal) # Including the uncertain dated settlement
+
+```
+
+
+#### EMA
+
+```{r result}
+# Box 1
+
+getNNratio(EMA_Settl_1_sf, Box1) # Only certain dated settlements
+
+getNNratio(EMA_Settl_1_2_sf, Box1) # Including the uncertain dated settlements
+
+```
+
+```{r result}
+
+# Box 2
+
+getNNratio(EMA_Settl_1_sf, Box2) # Only certain dated settlements
+
+getNNratio(EMA_Settl_1_2_sf, Box2) # Including the uncertain dated settlement
+
+```
+
+```{r result}
+
+# Rectangular
+
+getNNratio(EMA_Settl_1_sf, Rectangular) # Only certain dated settlements
+
+getNNratio(EMA_Settl_1_2_sf, Rectangular) # Including the uncertain dated settlement
+
+```
+
+```{r result}
+# Municipal
+
+getNNratio(EMA_Settl_1_sf, Municipal) # Only certain dated settlements
+
+getNNratio(EMA_Settl_1_2_sf, Municipal) # Including the uncertain dated settlement
+
+```
+
+
+#### HMA
+
+```{r result}
+# Box 1
+
+getNNratio(HMA_Settl_1_sf, Box1) # Only certain dated settlements
+
+getNNratio(HMA_Settl_1_2_sf, Box1) # Including the uncertain dated settlements
+
+```
+
+```{r result}
+
+# Box 2
+
+getNNratio(HMA_Settl_1_sf, Box2) # Only certain dated settlements
+
+getNNratio(HMA_Settl_1_2_sf, Box2) # Including the uncertain dated settlement
+
+```
+
+```{r result}
+
+# Rectangular
+
+getNNratio(HMA_Settl_1_sf, Rectangular) # Only certain dated settlements
+
+getNNratio(HMA_Settl_1_2_sf, Rectangular) # Including the uncertain dated settlement
+
+```
+
+```{r result}
+# Municipal
+
+getNNratio(HMA_Settl_1_sf, Municipal) # Only certain dated settlements
+
+getNNratio(HMA_Settl_1_2_sf, Municipal) # Including the uncertain dated settlement
+
+```
+
+
+#### LMA
+
+```{r result}
+# Box 1
+
+getNNratio(LMA_Settl_1_sf, Box1) # Only certain dated settlements
+
+getNNratio(LMA_Settl_1_2_sf, Box1) # Including the uncertain dated settlements
+
+```
+
+```{r result}
+
+# Box 2
+
+getNNratio(LMA_Settl_1_sf, Box2) # Only certain dated settlements
+
+getNNratio(LMA_Settl_1_2_sf, Box2) # Including the uncertain dated settlement
+
+```
+
+```{r result}
+
+# Rectangular
+
+getNNratio(LMA_Settl_1_sf, Rectangular) # Only certain dated settlements
+
+getNNratio(LMA_Settl_1_2_sf, Rectangular) # Including the uncertain dated settlement
+
+```
+
+```{r result}
+# Municipal
+
+getNNratio(LMA_Settl_1_sf, Municipal) # Only certain dated settlements
+
+getNNratio(LMA_Settl_1_2_sf, Municipal) # Including the uncertain dated settlement
+
+```
+
+
+#### MA_XIV
+
+```{r result}
+# Box 1
+
+getNNratio(MA_XIV_Settl_1_sf, Box1) # Only certain dated settlements
+
+getNNratio(MA_XIV_Settl_1_2_sf, Box1) # Including the uncertain dated settlements
+
+```
+
+```{r result}
+
+# Box 2
+
+getNNratio(MA_XIV_Settl_1_sf, Box2) # Only certain dated settlements
+
+getNNratio(MA_XIV_Settl_1_2_sf, Box2) # Including the uncertain dated settlement
+
+```
+
+```{r result}
+
+# Rectangular
+
+getNNratio(MA_XIV_Settl_1_sf, Rectangular) # Only certain dated settlements
+
+getNNratio(MA_XIV_Settl_1_2_sf, Rectangular) # Including the uncertain dated settlement
+
+```
+
+```{r result}
+# Municipal
+
+getNNratio(MA_XIV_Settl_1_sf, Municipal) # Only certain dated settlements
+
+getNNratio(MA_XIV_Settl_1_2_sf, Municipal) # Including the uncertain dated settlement
+
+```
+
+
+#### MA_XVII
+
+```{r result}
+# Box 1
+
+getNNratio(MA_XVII_Settl_1_sf, Box1) # Only certain dated settlements
+
+getNNratio(MA_XVII_Settl_1_2_sf, Box1) # Including the uncertain dated settlements
+
+```
+
+```{r result}
+
+# Box 2
+
+getNNratio(MA_XVII_Settl_1_sf, Box2) # Only certain dated settlements
+
+getNNratio(MA_XVII_Settl_1_2_sf, Box2) # Including the uncertain dated settlement
+
+```
+
+```{r result}
+
+# Rectangular
+
+getNNratio(MA_XVII_Settl_1_sf, Rectangular) # Only certain dated settlements
+
+getNNratio(MA_XVII_Settl_1_2_sf, Rectangular) # Including the uncertain dated settlement
+
+```
+
+```{r result}
+# Municipal
+
+getNNratio(MA_XVII_Settl_1_sf, Municipal) # Only certain dated settlements
+
+getNNratio(MA_XVII_Settl_1_2_sf, Municipal) # Including the uncertain dated settlement
+
+```
 
 Steps: 
 
@@ -833,515 +1809,7 @@ Steps:
 2) intersect points with sf of Box 1 and 2 and convert the result to ppp object
 3) run the nndist and r calculations
 
-
-
-
-# unique(Sites$Вид)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-## Settlements = 1
-
-```{r}
-
-# Филтрирам само обектите, които по един или друг начин, могат да бъдат класифицирани като селища. Ползваме файла Sites, който е генериран по горе от csv файл със всичките обекти 
-
-# Филтрирам само обектите, които могат да бъдат определени като селищни. Тъй като тук ще изберем само обектите със сигурни датировки, затова кръщаваме файла Settl1
-
-Settl1 <- filter(Sites, Вид == "Бани" | Вид == "Военен лагер/ град" | Вид == "Град" | Вид == "Единична постройка" | Вид == "Единична постройка?" | Вид == "Крепост" | Вид == "Крепост/ кула?" | Вид == "Крепост/ светилище?" | Вид == "Крепост/ селище?" | Вид == "Крепост?" | Вид == "Кула" | Вид == "Кула?" | Вид == "Манастир" | Вид == "Манастир/ черква?" | Вид == "Пътна станция" | Вид == "Пътна станция?" | Вид == "Светилище" | Вид == "Светилище/ селище?" | Вид == "Светилище?" | Вид == "Селище" | Вид == "Селище?" | Вид == "Селищна могила" | Вид == "Стопанство" | Вид == "Стопанство/ селище" | Вид == "Укрепен град" | Вид == "Укрепление?")%>%
-  
-# unique(Settl1_2$Вид)
-  
-# Следващата стъпка е да филтрирам само обектите със сигурни дати, без такива с колебаещи се дати. Това значи, че избирами за всяка епоха код == 1, а код 2 отпада. 
-  filter( Пра.==1 | Палео.==1 | Нео.==1 | РНео.==1 | СНео.==1 | КНео.==1 | Х==1 | РХ==1 | КХ==1 | БЕ==1 | РБЕ==1 | РБЕ1==1 | РБЕ2==1 | РБЕ3==1 | СБЕ==1 | КБЕ==1 | ЖЕ==1 | РЖЕ==1 | РЖЕ1==1 | РЖЕ2==1 | КЖЕ==1 | КЖЕ1==1 | КЖЕ2==1 | А==1 | К==1 | Ел.==1 | РЕл.==1 | КЕл.==1 | РЕ==1 | КА==1 | КРЕ==1 | РВ==1 | Ср.==1 | РСр.==1 | ЗСр.==1 | КСр.==1 | ПБЦ==1 | ВБЦ==1 | Възраждане==1 | Неопр.==1)%>%
-  
-# Следващите редове ще направя колони в които ще бъдат събрани всичките кодове. По този начин ще мога да селектирам всичките обекти от праисторията или от средновековието. 
-  
-# Първо ще направим колона, в която ще обединим всичките праисторически обекти:
-  
-  mutate(Праистория=Пра.+Палео.+Нео.+РНео.+СНео.+КНео.+Х+РХ+КХ)%>%
-  
-  # Сега и за останалите епохи
-  
-  # Неолит:
-  
-  mutate(Неолит=Нео.+РНео.+СНео.+КНео.)%>%
-  
-  # Халколит:
-
-  mutate(Халколит=Х+РХ+КХ)%>%
-  
-  # Бронзова епоха
-
-  mutate(Бронз=БЕ+РБЕ+РБЕ1+РБЕ2+РБЕ3+СБЕ+КБЕ)%>%
-  
-  # Раннобронзова:
-  
-  mutate(Раннобронзова=РБЕ+РБЕ1+РБЕ2+РБЕ3)%>%
-  
-  # СБЕ няма регистрирани обекти
-  
-  # КБЕ няма други подпериоди, така че за нея ще използвам колоната КБЕ
-  
-  # Желязна
-
-  mutate(Желязна=ЖЕ+РЖЕ+РЖЕ1+РЖЕ2+КЖЕ+КЖЕ1+КЖЕ2+К+Ел.+РЕл.+КЕл.)%>%
-  
-  # Ранножелязна:
-
-  mutate(Ранножелязна=РЖЕ+РЖЕ1+РЖЕ2)%>%
-  
-  # Късножелязна:
-
-  mutate(Късножелязна=КЖЕ+КЖЕ1+КЖЕ2+К+Ел.+РЕл.+КЕл.)%>%
-  
-  # Елинизъм:
-
-  mutate(Елинизъм=Ел.+РЕл.+КЕл.)%>%
-  
-  # За римската епоха няма други подпериоди, така че за него ще използвам колоната РЕ.
-  
-  # За късноримската епоха няма други подпериоди, така че за него ще използвам колоната КРЕ.
-
-  # Късноантична:
-
-  mutate(Късноантична=КА+КРЕ+РВ)%>%
-
-# Средновеквие (без Късното):
-
-  mutate(СредновековиеXIV=Ср.+РСр.+ЗСр.+ПБЦ+ВБЦ)%>%
-
-# Средновеквие (с Късното)
-
-  mutate(СредновековиеXVII=Ср.+РСр.+ЗСр.+КСр.+ПБЦ+ВБЦ)%>%
-  
-# Ранно средновековие
-
-  mutate(Ранноср.=РСр.+ПБЦ)%>%
-
-# Зряло средновековие
-
-  mutate(Зрялоср.=ЗСр.+ВБЦ)
-
-# Късното средновековие няма други подпериоди, така че за него ще използвам колоната КСр.
-
-Settl1
-
-```
-
-```{r}
-
-# Тук селектирам само колоните, които ще са ми нужни, за да не затормозявам програмата с излишни такива. 
-
-Settl1 <- select(Settl1, Cat, E_coord:N_coord, Вид, КБЕ, РЕ, КРЕ, Праистория:Зрялоср., КСр.)
-
-```
-
-## Settlements = 1+2 
-
-```{r}
-
-# Това е csv файлът, който заредих по-горе, с всичките обекти и даните за тях от Казанлъшката котловина. Файлът включва и обекти, основно крепости, които са регистрирани извън изследваната територия, основно да служат като спомагателни при анализите с пътищата.    
-
-Sites
-
-# Филтрирам само обектите, които по един или друг начин, могат да бъдат класифицирани като селища. Ползваме файла Sites, който е генериран по горе от csv файл със всичките обекти 
-
-# Филтрирам само обектите, които могат да бъдат определени като селищни. Тъй като тук ще изберем и обектите със несигурни датировки, затова кръщаваме файла Settl1_2
-
-Settl1_2 <- filter(Sites, Вид == "Бани" | Вид == "Военен лагер/ град" | Вид == "Град" | Вид == "Единична постройка" | Вид == "Единична постройка?" | Вид == "Крепост" | Вид == "Крепост/ кула?" | Вид == "Крепост/ светилище?" | Вид == "Крепост/ селище?" | Вид == "Крепост?" | Вид == "Кула" | Вид == "Кула?" | Вид == "Манастир" | Вид == "Манастир/ черква?" | Вид == "Пътна станция" | Вид == "Пътна станция?" | Вид == "Светилище" | Вид == "Светилище/ селище?" | Вид == "Светилище?" | Вид == "Селище" | Вид == "Селище?" | Вид == "Селищна могила" | Вид == "Стопанство" | Вид == "Стопанство/ селище" | Вид == "Укрепен град" | Вид == "Укрепление?")%>%
-  
-# unique(Settl1_2$Вид)
-  
-# Следващата стъпка е да филтрирам обектите със сигурни и несигурни дати, без такива с колебаещи се дати. Това значи, че избирами за всяка епоха код >= 1 
-  filter( Пра.>=1 | Палео.>=1 | Нео.>=1 | РНео.>=1 | СНео.>=1 | КНео.>=1 | Х>=1 | РХ>=1 | КХ>=1 | БЕ>=1 | РБЕ>=1 | РБЕ1>=1 | РБЕ2>=1 | РБЕ3>=1 | СБЕ>=1 | КБЕ>=1 | ЖЕ>=1 | РЖЕ>=1 | РЖЕ1>=1 | РЖЕ2>=1 | КЖЕ>=1 | КЖЕ1>=1 | КЖЕ2>=1 | А>=1 | К>=1 | Ел.>=1 | РЕл.>=1 | КЕл.>=1 | РЕ>=1 | КА>=1 | КРЕ>=1 | РВ>=1 | Ср.>=1 | РСр.>=1 | ЗСр.>=1 | КСр.>=1 | ПБЦ>=1 | ВБЦ>=1 | Възраждане>=1 | Неопр.>=1)%>%
-  
-# Следващите редове ще направя колони в които ще бъдат събрани всичките кодове. По този начин ще мога да селектирам всичките обекти от праисторията или от средновековието. 
-  
-# Първо ще направим колона, в която ще обединим всичките праисторически обекти:
-  
-  mutate(Праистория=Пра.+Палео.+Нео.+РНео.+СНео.+КНео.+Х+РХ+КХ)%>%
-  
-  # Сега и за останалите епохи
-  
-  # Неолит:
-  
-  mutate(Неолит=Нео.+РНео.+СНео.+КНео.)%>%
-  
-  # Халколит:
-
-  mutate(Халколит=Х+РХ+КХ)%>%
-  
-  # Бронзова епоха
-
-  mutate(Бронз=БЕ+РБЕ+РБЕ1+РБЕ2+РБЕ3+СБЕ+КБЕ)%>%
-  
-  # Раннобронзова:
-  
-  mutate(Раннобронзова=РБЕ+РБЕ1+РБЕ2+РБЕ3)%>%
-  
-  # СБЕ няма регистрирани обекти
-  
-  # КБЕ няма други подпериоди, така че за нея ще използвам колоната КБЕ
-  
-  # Желязна
-
-  mutate(Желязна=ЖЕ+РЖЕ+РЖЕ1+РЖЕ2+КЖЕ+КЖЕ1+КЖЕ2+К+Ел.+РЕл.+КЕл.)%>%
-  
-  # Ранножелязна:
-
-  mutate(Ранножелязна=РЖЕ+РЖЕ1+РЖЕ2)%>%
-  
-  # Късножелязна:
-
-  mutate(Късножелязна=КЖЕ+КЖЕ1+КЖЕ2+К+Ел.+РЕл.+КЕл.)%>%
-  
-  # Елинизъм:
-
-  mutate(Елинизъм=Ел.+РЕл.+КЕл.)%>%
-  
-  # За римската епоха няма други подпериоди, така че за него ще използвам колоната РЕ.
-  
-  # За късноримската епоха няма други подпериоди, така че за него ще използвам колоната КРЕ.
-
-  # Късноантична:
-
-  mutate(Късноантична=КА+КРЕ+РВ)%>%
-
-# Средновеквие (без Късното):
-
-  mutate(СредновековиеXIV=Ср.+РСр.+ЗСр.+ПБЦ+ВБЦ)%>%
-
-# Средновеквие (с Късното)
-
-  mutate(СредновековиеXVII=Ср.+РСр.+ЗСр.+КСр.+ПБЦ+ВБЦ)%>%
-  
-# Ранно средновековие
-
-  mutate(Ранноср.=РСр.+ПБЦ)%>%
-
-# Зряло средновековие
-
-  mutate(Зрялоср.=ЗСр.+ВБЦ)
-
-# Късното средновековие няма други подпериоди, така че за него ще използвам колоната КСр.
-
-Settl1_2
-
-```
-
-```{r}
-
-# Тук селектирам само колоните, които ще са ми нужни, за да не затормозявам програмата с излишни такива. 
-# Забележи функцията dplyr::select(). Това е защото съм заредил и функцията sf(), която се конфронтира с dplyr и се появява грешка, за това трябваше изрично да кажа, на R, че искам да използвам функцията select() на dplyr
-
-Settl1_2 <- dplyr::select(Settl1_2, Cat, E_coord:N_coord, Вид, КБЕ, РЕ, КРЕ, Праистория:Зрялоср., КСр.)
-
-Settl1_2
-
-```
-
-
-```{r}
-
-LBESettl1 <- Settl1 %>%
-  filter(КБЕ>=1)
-
-LBESettl1_2 <- Settl1_2 %>%
-  filter(КБЕ>=1)
-
-LBESettl1
-
-LBESettl1_2
-
-
-
-RPSettl1 <- Settl1 %>%
-  filter(РЕ==1)
-
-RPSettl1_2 <- Settl1_2 %>%
-  filter(РЕ>=1)
-
-RPSettl1
-
-RPSettl1_2
-
-
-
-LRPSettl1 <- Settl1 %>%
-  filter(КРЕ>=1)
-
-LRPSettl1_2 <- Settl1_2 %>%
-  filter(КРЕ>=1)
-
-LRPSettl1
-
-LRPSettl1_2
-
-
-
-
-PreSettl1 <- Settl1 %>%
-  filter(Праистория>=1)
-
-PreSettl1_2 <- Settl1_2 %>%
-  filter(Праистория>=1)
-
-PreSettl1
-
-PreSettl1_2
-
-
-
-
-NeoSettl1 <- Settl1 %>%
-  filter(Неолит>=1)
-
-NeoSettl1_2 <- Settl1_2 %>%
-  filter(Неолит>=1)
-
-NeoSettl1
-
-NeoSettl1_2
-
-
-
-
-HalcSettl1 <- Settl1 %>%
-  filter(Халколит>=1)
-
-HalcSettl1_2 <- Settl1_2 %>%
-  filter(Халколит>=1)
-
-HalcSettl1
-
-HalcSettl1_2
-
-
-
-
-BASettl1 <- Settl1 %>%
-  filter(Бронз>=1)
-
-BASettl1_2 <- Settl1_2 %>%
-  filter(Бронз>=1)
-
-BASettl1
-
-BASettl1_2
-
-
-
-
-
-EBASettl1 <- Settl1 %>%
-  filter(Раннобронзова>=1)
-
-EBASettl1_2 <- Settl1_2 %>%
-  filter(Раннобронзова>=1)
-
-EBASettl1
-
-EBASettl1_2
-
-
-
-
-
-
-IASettl1 <- Settl1 %>%
-  filter(Желязна>=1)
-
-IASettl1_2 <- Settl1_2 %>%
-  filter(Желязна>=1)
-
-IASettl1
-
-IASettl1_2
-
-
-
-EIASettl1 <- Settl1 %>%
-  filter(Ранножелязна>=1)
-
-EIASettl1_2 <- Settl1_2 %>%
-  filter(Ранножелязна>=1)
-
-EIASettl1
-
-EIASettl1_2
-
-
-
-
-LIASettl1 <- Settl1 %>%
-  filter(Късножелязна>=1)
-
-LIASettl1_2 <- Settl1_2 %>%
-  filter(Късножелязна>=1)
-
-LIASettl1
-
-LIASettl1_2
-
-
-
-
-
-
-
-HellSettl1 <- Settl1 %>%
-  filter(Елинизъм>=1)
-
-HellSettl1_2 <- Settl1_2 %>%
-  filter(Елинизъм>=1)
-
-HellSettl1
-
-HellSettl1_2
-
-
-
-
-LASettl1 <- Settl1 %>%
-  filter(Късноантична>=1)
-
-LASettl1_2 <- Settl1_2 %>%
-  filter(Късноантична>=1)
-
-LASettl1
-
-LASettl1_2
-
-
-
-XIVSettl1 <- Settl1 %>%
-  filter(СредновековиеXIV>=1)
-
-XIVSettl1_2 <- Settl1_2 %>%
-  filter(СредновековиеXIV>=1)
-
-XIVSettl1
-
-XIVSettl1_2
-
-
-
-
-
-
-XVIISettl1 <- Settl1 %>%
-  filter(СредновековиеXVII>=1)
-
-XVIISettl1_2 <- Settl1_2 %>%
-  filter(СредновековиеXVII>=1)
-
-XVIISettl1
-
-XVIISettl1_2
-
-
-
-
-
-
-
-EMASettl1 <- Settl1 %>%
-  filter(Ранноср.>=1)
-
-EMASettl1_2 <- Settl1_2 %>%
-  filter(Ранноср.>=1)
-
-EMASettl1
-
-EMASettl1_2
-
-
-
-
-
-
-
-HMASettl1 <- Settl1 %>%
-  filter(Зрялоср.>=1)
-
-HMASettl1_2 <- Settl1_2 %>%
-  filter(Зрялоср.>=1)
-
-HMASettl1
-
-HMASettl1_2
-
-
-
-
-
-
-
-LMASettl1 <- Settl1 %>%
-  filter(КСр.>=1)
-
-LMASettl1_2 <- Settl1_2 %>%
-  filter(КСр.>=1)
-
-LMASettl1
-
-LMASettl1_2
-
-```
-
-
-
-
-
-
-
+Prehist
 
 
 
