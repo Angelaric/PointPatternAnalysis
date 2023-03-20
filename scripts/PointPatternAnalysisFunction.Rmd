@@ -1,0 +1,172 @@
+---
+title: "Point Pattern Analysis"
+author: "Angel Bogdanov Grigorov"
+date: "Created 28 Feb. 2023, updated `r format(Sys.time(), '%d %B, %Y')`"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    theme: flatly
+    highlight: tango
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      message = FALSE,
+                      warning = FALSE)
+```
+
+
+## Load library
+
+```{r}
+
+library(tidyverse)
+library(here)
+library(dplyr)
+library(ggplot2)
+library(sf)
+library(raster)
+library(spatstat)
+
+```
+
+## Load and filter settlement point data
+
+In the following chunk, you will load a csv that ....Това е csv файлът с всичките обекти и даните за тях от Казанлъшката котловина. Файлът включва и обекти, основно крепости, които са регистрирани извън изследваната територия, основно да служат като спомагателни при анализите с пътищата. Когаро използваш csv трябва да се увериш, че координатите ти са с точки, а не със запетайки. Ако са със запетайки R няма да разпознае кординатите и това ще ти доведе масови главоболия. Ако случайно Гугъл шитът астроен да слага запетайки при числата вместо точки, лесно можеш да промениш това от "Файл" -> "Настройки" -> и да промениш "Локал" на "Съединени щати". След това си експортираш файла на в csv и си го зареждаш в R.
+```{r data}
+
+Sites <- read_csv(here("data/ChronCatalogue6Extract.csv")) 
+head(Sites)
+```
+
+Този раздел включва филтрирането и селектирането на всичките обекти със селищни функции, които са само със сигурни дати в съответният период и попадат само в територийте на петте общини: Павел баня, Казанлък, Мъглиж, Гурково и Николаево
+
+## Settlements that exist with certainty
+```{r}
+
+Settlements1 <- Sites %>% filter(Община=="Павел баня" | Община=="Казанлък" | Община=="Мъглиж" | Община=="Гурково" | Община=="Николаево")%>%
+  
+# unique(Settlements1$Община)
+
+ 
+# След това филтрирам само обектите, които по един или друг начин, могат да бъдат класифицирани като селища:
+  
+  filter(Вид == "Бани" | Вид == "Военен лагер/ град" | Вид == "Град" | Вид == "Единична постройка" | Вид == "Единична постройка?" | Вид == "Крепост" | Вид == "Крепост/ кула?" | Вид == "Крепост/ светилище?" | Вид == "Крепост/ селище?" | Вид == "Крепост?" | Вид == "Кула" | Вид == "Кула?" | Вид == "Манастир" | Вид == "Манастир/ черква?" | Вид == "Пътна станция" | Вид == "Пътна станция?" | Вид == "Светилище" | Вид == "Светилище/ селище?" | Вид == "Светилище?" | Вид == "Селище" | Вид == "Селище?" | Вид == "Селищна могила" | Вид == "Стопанство" | Вид == "Стопанство/ селище" | Вид == "Укрепен град" | Вид == "Укрепление?")
+
+
+Settlements1 %>% 
+   filter( Пра.==1 | Палео.==1 | Нео.==1 | РНео.==1 | СНео.==1 | КНео.==1 | Х==1 | РХ==1 | КХ==1) %>% 
+  mutate(Праистория=Пра.+Палео.+Нео.+РНео.+СНео.+КНео.+Х+РХ+КХ) %>%
+  pull(Праистория)
+
+
+Settlements1 %>% 
+  filter( КА==1 | КРЕ==1 |РВ ==1 ) %>% 
+  mutate(Късноантична=КА+КРЕ+РВ) %>%
+  pull(Късноантична)
+  
+Settlements1 %>% 
+  filter( ЖЕ==1 | РЖЕ==1 | РЖЕ1==1 | РЖЕ2==1 | КЖЕ==1 | КЖЕ1==1 | КЖЕ2==1 | К==1 | Ел.==1 | РЕл.==1 | КЕл.==1  ) %>% 
+  mutate(Желязна=ЖЕ+РЖЕ+РЖЕ1+РЖЕ2+КЖЕ+КЖЕ1+КЖЕ2+К+Ел.+РЕл.+КЕл.) %>%
+  #filter(Желязна >=1) %>% 
+  pull(Желязна)
+```
+
+## Convert certain settlements into an sf object
+```{r}
+
+# Convert the data frame to an sf object 
+
+Settlements1_sf <- st_as_sf(Settlements1, coords = c("E_coord", "N_coord"), crs=4326)%>%
+  st_transform(crs = 32635)
+
+st_crs(Settlements1_sf)
+
+Settlements1_sf
+
+```
+
+# Load study area objects
+```{r}
+Box1 <-st_read("../data/Box1.shp")
+
+Box2 <-st_read("../data/Box2.shp")
+
+Municipal <-st_read("../data/Municipal.shp")
+
+Rectangular <-st_read("../data/Rectangular.shp")
+```
+### Point Pattern Analysis function
+Here is a manually constructed NNI function. One can also use the predefined functions here: https://www.rdocumentation.org/packages/spatialEco/versions/1.3-7/topics/nni to 
+```{r nna-function}
+result <- NULL
+getNNratio <- function(period_sites, study_area){  # these two arguments should be sf objects in the same CRS
+  library(sf)
+  library(spatstat)
+  # create an owin object out of the study area polygon
+  window <- as.owin(study_area)
+  # create ppp object out of period-sites that fall within the study area
+  period_sites_ppp <- period_sites$geometry %>% 
+     st_intersection(study_area) %>% 
+     st_coordinates() %>% 
+     as.ppp(W = window)
+  # run NNA analysis on the ppp objects
+  observed_dist <- mean(nndist(period_sites_ppp))
+ 
+  expected_dist <- 0.5*sqrt(st_area(study_area)/nrow(period_sites))
+  r <- observed_dist/expected_dist
+  # You can also run this on a linear network (e.g. Tundzha) after creating linnet , a linear network from it
+  # period_sites_lpp <- period_sites$geometry %>% 
+  #    st_intersection(study_area) %>% 
+  #    st_coordinates() %>% 
+  #    as.lpp(L = window)
+  # mean_nn_linear <- mean(nndist.lpp(period_sites_lpp))
+  # rlin <- mean_nn_linear/mean_dist
+  
+  result <- rbind(result, r)
+  result
+  # plot points within the window with a result
+  # plot(period_sites_ppp, main = paste0("NN ratio for the ",quote(period_sites), " is ", round(result,2)))
+  # plot all the points (inclusive of those outside the window)
+  plot(period_sites$geometry, main = paste0("NN ratio for the ", quote(period_sites), " inside the bounding polygon is ", round(result,2))); plot(study_area$geometry,border = "blue", add = T)
+}
+
+```
+
+# For testing purposes
+```{r eval= FALSE}
+
+# To run the function
+
+getNNratio(your_period_sites, your_box)
+
+
+# A worked example for Roman period
+period_sites <- Settlements1_sf %>% dplyr::filter(РЕ==1)
+study_area <- Box1
+
+getNNratio(period_sites, study_area)
+
+
+
+# Check out observed distance
+mean(nndist(period_sites_ppp))
+hist(nndist(period_sites_ppp))
+
+# Reverse the NNI calculation by running it on random points
+random_points <- st_sample(study_area, 35)
+plot(random_points); plot(study_area$geometry, add= T)
+plot(period_sites$geometry); plot(study_area$geometry, add= T)
+
+random_ppp <- random_points %>%
+     st_as_sf(crs = 32635) %>% 
+     st_intersection(study_area) %>% 
+     st_coordinates() %>% 
+     as.ppp(W = window)
+
+observed_dist <- mean(nndist(random_ppp))
+expected_dist <- 0.5*sqrt(st_area(study_area)/nrow(period_sites))
+observed_dist/expected_dist # 1.189
+
+```
+
