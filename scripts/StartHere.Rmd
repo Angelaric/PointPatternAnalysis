@@ -115,28 +115,65 @@ mNNA <- as.data.frame(mastertable)
 write.csv(mastertable, "../outputs/masterNNA.csv")
  
 ```
-Note that LBA NNA calculation was erroring out for Box2 so may need to be troubleshot or done manually. 
 
 ### GGPLOT
+
+Put the results in ggplot
+
 ```{r}
-mNNA %>% 
+mNNA %>%
+  mutate_at(vars(Pre:MA_XVII), as.numeric)%>% # тук превръщам колоните от Pre до MA_XVII в числови стойности
+  mutate_at(vars(Pre:MA_XVII), round, 2) %>% # тук за същите колони закръглям стойностите до две числа след запетаята 
   filter(certainty == "certain") %>%
   pivot_longer(cols = Pre:MA_XVII,
               values_to = "values",
               names_to = "period") %>% 
   mutate(period = factor(period, levels = period_list)) %>% 
   ggplot()+
-  geom_line(aes(x = period, y = values, group = studyarea, color = studyarea, 
-                size = 0.1)) + 
+  geom_line(aes(x = period, y = values, group = studyarea, color = studyarea)) + 
   theme_minimal()+
-  labs(color = "Bounding area \ntype")+
+  ggtitle("NN")+
+  labs(color = "Тестови територии")+
   theme()
 
 
 ```
 
 
+
+```{r}
+mNNA %>%
+  mutate_at(vars(Pre:MA_XVII), as.numeric)%>%
+  mutate_at(vars(Pre:MA_XVII), round, 2) %>% 
+  filter(certainty == "certain") %>%
+  pivot_longer(cols = Pre:MA_XVII,
+              values_to = "values",
+              names_to = "period") %>% 
+  mutate(period = factor(period, levels = period_list)) %>% 
+  ggplot(aes(x = period, y = values, group = studyarea, color = studyarea))+
+  geom_line(size=1.5) + 
+  geom_point(size=2)+
+  labs(
+    title = "Заглавие",
+    color = "Тестови територии"
+    )+  
+  theme(
+    
+  )
+
+
+
+
+```
+
+
+
+
+
 ### Results
+
+Toва тук е всичко онова горе, но ръчно направено.  
+
 #### Prehistoric
 
 ```{r result}
