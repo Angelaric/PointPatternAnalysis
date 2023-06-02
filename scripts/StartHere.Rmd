@@ -124,30 +124,6 @@ mNNA
 Put the results in ggplot
 
 ```{r}
-mNNA %>%
-   
-  mutate_at(vars(Pre:MA_XVII), as.numeric)%>% # тук превръщам колоните от Pre до MA_XVII в числови стойности
-  mutate_at(vars(Pre:MA_XVII), round, 2) %>% # тук за същите колони закръглям стойностите до две числа след запетаята 
-  filter(certainty == "certain") %>% # Филтрираме само сигурно датираните обекти
-  pivot_longer(cols = Pre:MA_XVII,
-              values_to = "values",
-              names_to = "period") %>% 
-  mutate(period = factor(period, levels = period_list)) %>% 
-  ggplot()+
-  geom_line(aes(x = period, y = values, group = studyarea, color = studyarea)) + 
-  theme_minimal()+
-  ggtitle("NN")+
-  labs(color = "Тестови територии",
-       x = "Периоди",
-    y = "Стойности")+
-  theme()
-
-
-```
-
-
-
-```{r}
 # Това е само със сигурните обекти
 
 bg_period <- c("Пра.",	"Нео.",	"Х",	"БЕ",	"РБЕ",	"ЖЕ",	"РЖЕ",	"КЖЕ",	"Ел.",	"РЕ",	"КРЕ",	"КА",	"РСр.",	"ЗСр.",	"КСр.",	"Ср.XIV",	"Ср.XVII")
@@ -172,11 +148,13 @@ mNNA %>%
   geom_line(size=1) + 
   geom_point(size=2)+
       labs(
-    title = "Заглавие",
+    title = "Анализ на най-близкия съсед за сигурно датираните селища",
     color = "Тестови територии",
     x = "Периоди",
     y = "Стойности")+
   theme_bw()
+
+ggsave("NNA_certain.png")
   
 ```
 
@@ -205,14 +183,15 @@ mNNA %>%
   geom_line(size=1) + 
   geom_point(size=2)+
       labs(
-    title = "Заглавие",
+    title = "Анализ на най-близкия съсед, включващ и несигурно датираните селища",
     color = "Тестови територии",
     x = "Периоди",
     y = "Стойности")+
   theme_bw()
+
+ggsave("NNA_uncertain.png")
   
 ```
-
 
 
 ### Results
