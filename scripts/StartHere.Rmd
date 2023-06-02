@@ -26,6 +26,7 @@ library(raster)
 library(spatstat)
 library(spatstat.data)
 #library(maptools)
+library(ggrepel)
 
 ```
 
@@ -112,8 +113,10 @@ mastertable <- cbind(studyarea=rep(box_list,each = 2),
                      certainty = rep(c("certain", "uncertain"), 4),
                      mastertable) 
 mNNA <- as.data.frame(mastertable)
+
+
 write.csv(mastertable, "../outputs/masterNNA.csv")
- 
+mNNA
 ```
 
 ### GGPLOT
@@ -122,9 +125,10 @@ Put the results in ggplot
 
 ```{r}
 mNNA %>%
+   
   mutate_at(vars(Pre:MA_XVII), as.numeric)%>% # тук превръщам колоните от Pre до MA_XVII в числови стойности
   mutate_at(vars(Pre:MA_XVII), round, 2) %>% # тук за същите колони закръглям стойностите до две числа след запетаята 
-  filter(certainty == "certain") %>%
+  filter(certainty == "certain") %>% # Филтрираме само сигурно датираните обекти
   pivot_longer(cols = Pre:MA_XVII,
               values_to = "values",
               names_to = "period") %>% 
@@ -133,7 +137,9 @@ mNNA %>%
   geom_line(aes(x = period, y = values, group = studyarea, color = studyarea)) + 
   theme_minimal()+
   ggtitle("NN")+
-  labs(color = "Тестови територии")+
+  labs(color = "Тестови територии",
+       x = "Периоди",
+    y = "Стойности")+
   theme()
 
 
@@ -142,25 +148,40 @@ mNNA %>%
 
 
 ```{r}
-mNNA %>%
-  mutate_at(vars(Pre:MA_XVII), as.numeric)%>%
-  mutate_at(vars(Pre:MA_XVII), round, 2) %>% 
-  filter(certainty == "certain") %>%
-  pivot_longer(cols = Pre:MA_XVII,
-              values_to = "values",
-              names_to = "period") %>% 
-  mutate(period = factor(period, levels = period_list)) %>% 
-  ggplot(aes(x = period, y = values, group = studyarea, color = studyarea))+
-  geom_line(size=1.5) + 
-  geom_point(size=2)+
-  labs(
-    title = "Заглавие",
-    color = "Тестови територии"
-    )+  
-  theme(
-    
-  )
+bg_period <- c("Пра.",	"Нео.",	"Х",	"БЕ",	"РБЕ",	"ЖЕ",	"РЖЕ",	"КЖЕ",	"Ел.",	"РЕ",	"КРЕ",	"КА",	"РСр.",	"ЗСр.",	"КСр.",	"Ср.XIV",	"Ср.XVII")
+colnames(mNNA)[3:19] <- c("Пра.",	"Нео.",	"Х",	"БЕ",	"РБЕ",	"ЖЕ",	"РЖЕ",	"КЖЕ",	"Ел.",	"РЕ",	"КРЕ",	"КА",	"РСр.",	"ЗСр.",	"КСр.",	"Ср.XIV",	"Ср.XVII")
 
+
+mNNA %>%
+  mutate_all(funs(str_replace(., "^Inf", "NA"))) %>% 
+ mutate_at(vars(Пра.:Ср.XVII), as.numeric)%>%
+ mutate_at(vars(Пра.:Ср.XVII), round, 2) %>%
+ filter(certainty == "certain") %>%
+ pivot_longer(cols = Пра.:Ср.XVII,
+             values_to = "values",
+             names_to = "period") %>%
+  mutate(studyarea= case_when(studyarea=="Box1"~"Територия 1",
+                   studyarea=="Box2"~"Територия 2",
+                   studyarea=="Rectangular"~"Територия 4",
+                   studyarea=="Municipal"~"Територия 3")) %>%
+  # mutate_at(vars(Пра.:Ср.XVII), as.numeric)%>% # тук превръщам колоните от Pre до MA_XVII в числови стойности
+  # mutate_at(vars(Пра.:Ср.XVII), round, 3) %>% # тук за същите колони закръглям стойностите до две числа след запетаята 
+  filter(certainty == "certain") %>% # Филтрираме само сигурно датираните обекти
+  mutate(period = factor(period, levels = bg_period)) %>% 
+  ggplot(aes(x = period, y = values, group = studyarea, color = studyarea))+
+  geom_line(size=1) + 
+  geom_point(size=2)+
+      labs(
+    title = "Заглавие",
+    color = "Тестови територии",
+    x = "Периоди",
+    y = "Стойности"   #,
+    #col.names[3:19]=c("Пра.",	"Нео.",	"Х",	"БЕ",	"РБЕ",	"ЖЕ",	"РЖЕ",	"КЖЕ",	"Ел.",	"РЕ",	"КРЕ",	"КА",	"РСр.",	"ЗСр.",	"КСр.",	"Ср.XIV",	"Ср.XVII")
+        )+
+  #knitr::kable(
+   # col.names=c("Пра.",	"Нео.",	"Х",	"БЕ",	"РБЕ",	"ЖЕ",	"РЖЕ",	"КЖЕ",	"Ел.",	"РЕ",	"КРЕ",	"КА",	"РСр.",	"ЗСр.",	"КСр.",	"Ср.XIV",	"Ср.XVII"))
+  theme_bw()
+  
 
 
 
