@@ -148,24 +148,24 @@ mNNA %>%
 
 
 ```{r}
+# Това е само със сигурните обекти
+
 bg_period <- c("Пра.",	"Нео.",	"Х",	"БЕ",	"РБЕ",	"ЖЕ",	"РЖЕ",	"КЖЕ",	"Ел.",	"РЕ",	"КРЕ",	"КА",	"РСр.",	"ЗСр.",	"КСр.",	"Ср.XIV",	"Ср.XVII")
-colnames(mNNA)[3:19] <- c("Пра.",	"Нео.",	"Х",	"БЕ",	"РБЕ",	"ЖЕ",	"РЖЕ",	"КЖЕ",	"Ел.",	"РЕ",	"КРЕ",	"КА",	"РСр.",	"ЗСр.",	"КСр.",	"Ср.XIV",	"Ср.XVII")
+colnames(mNNA)[3:19] <- c("Пра.",	"Нео.",	"Х",	"БЕ",	"РБЕ",	"ЖЕ",	"РЖЕ",	"КЖЕ",	"Ел.",	"РЕ",	"КРЕ",	"КА",	"РСр.",	"ЗСр.",	"КСр.",	"Ср.XIV",	"Ср.XVII") # Преименуваме имената на колоните на български.
 
 
 mNNA %>%
-  mutate_all(funs(str_replace(., "^Inf", "NA"))) %>% 
- mutate_at(vars(Пра.:Ср.XVII), as.numeric)%>%
- mutate_at(vars(Пра.:Ср.XVII), round, 2) %>%
- filter(certainty == "certain") %>%
- pivot_longer(cols = Пра.:Ср.XVII,
+  mutate_all(funs(str_replace(., "^Inf", "NA"))) %>% # Тук превръщаме Inf в НоДата, защото това "Инф" ни създаде доста главоболия
+ mutate_at(vars(Пра.:Ср.XVII), as.numeric)%>% # Превръщаме всички колони от колона "Пра." до колона "Ср.XVII" в числови стойности   
+ mutate_at(vars(Пра.:Ср.XVII), round, 2) %>% # Закръгляме стойностите до две числа след запетаята
+ filter(certainty == "certain") %>% # Филтрираме само сигурно датираните обекти
+ pivot_longer(cols = Пра.:Ср.XVII, # Завъртаме колоната, така, че колоните да станат редове, а редовете колони
              values_to = "values",
              names_to = "period") %>%
-  mutate(studyarea= case_when(studyarea=="Box1"~"Територия 1",
+  mutate(studyarea= case_when(studyarea=="Box1"~"Територия 1", # Преименуваме боксовете на "територия"
                    studyarea=="Box2"~"Територия 2",
                    studyarea=="Rectangular"~"Територия 4",
                    studyarea=="Municipal"~"Територия 3")) %>%
-  # mutate_at(vars(Пра.:Ср.XVII), as.numeric)%>% # тук превръщам колоните от Pre до MA_XVII в числови стойности
-  # mutate_at(vars(Пра.:Ср.XVII), round, 3) %>% # тук за същите колони закръглям стойностите до две числа след запетаята 
   filter(certainty == "certain") %>% # Филтрираме само сигурно датираните обекти
   mutate(period = factor(period, levels = bg_period)) %>% 
   ggplot(aes(x = period, y = values, group = studyarea, color = studyarea))+
@@ -175,19 +175,43 @@ mNNA %>%
     title = "Заглавие",
     color = "Тестови територии",
     x = "Периоди",
-    y = "Стойности"   #,
-    #col.names[3:19]=c("Пра.",	"Нео.",	"Х",	"БЕ",	"РБЕ",	"ЖЕ",	"РЖЕ",	"КЖЕ",	"Ел.",	"РЕ",	"КРЕ",	"КА",	"РСр.",	"ЗСр.",	"КСр.",	"Ср.XIV",	"Ср.XVII")
-        )+
-  #knitr::kable(
-   # col.names=c("Пра.",	"Нео.",	"Х",	"БЕ",	"РБЕ",	"ЖЕ",	"РЖЕ",	"КЖЕ",	"Ел.",	"РЕ",	"КРЕ",	"КА",	"РСр.",	"ЗСр.",	"КСр.",	"Ср.XIV",	"Ср.XVII"))
+    y = "Стойности")+
   theme_bw()
   
-
-
-
 ```
 
+```{r}
+# Сега като включим и несигурните
 
+bg_period <- c("Пра.",	"Нео.",	"Х",	"БЕ",	"РБЕ",	"ЖЕ",	"РЖЕ",	"КЖЕ",	"Ел.",	"РЕ",	"КРЕ",	"КА",	"РСр.",	"ЗСр.",	"КСр.",	"Ср.XIV",	"Ср.XVII")
+colnames(mNNA)[3:19] <- c("Пра.",	"Нео.",	"Х",	"БЕ",	"РБЕ",	"ЖЕ",	"РЖЕ",	"КЖЕ",	"Ел.",	"РЕ",	"КРЕ",	"КА",	"РСр.",	"ЗСр.",	"КСр.",	"Ср.XIV",	"Ср.XVII") # Преименуваме имената на колоните на български.
+
+
+mNNA %>%
+  mutate_all(funs(str_replace(., "^Inf", "NA"))) %>% # Тук превръщаме Inf в НоДата, защото това "Инф" ни създаде доста главоболия
+ mutate_at(vars(Пра.:Ср.XVII), as.numeric)%>% # Превръщаме всички колони от колона "Пра." до колона "Ср.XVII" в числови стойности   
+ mutate_at(vars(Пра.:Ср.XVII), round, 2) %>% # Закръгляме стойностите до две числа след запетаята
+ filter(certainty == "uncertain") %>% # Филтрираме, за да включим и несигурно датираните обекти
+ pivot_longer(cols = Пра.:Ср.XVII, # Завъртаме колоната, така, че колоните да станат редове, а редовете колони
+             values_to = "values",
+             names_to = "period") %>%
+  mutate(studyarea= case_when(studyarea=="Box1"~"Територия 1", # Преименуваме боксовете на "територия"
+                   studyarea=="Box2"~"Територия 2",
+                   studyarea=="Rectangular"~"Територия 4",
+                   studyarea=="Municipal"~"Територия 3")) %>%
+  filter(certainty == "uncertain") %>% # Филтрираме, за да включим и несигурно датираните обекти
+  mutate(period = factor(period, levels = bg_period)) %>% 
+  ggplot(aes(x = period, y = values, group = studyarea, color = studyarea))+
+  geom_line(size=1) + 
+  geom_point(size=2)+
+      labs(
+    title = "Заглавие",
+    color = "Тестови територии",
+    x = "Периоди",
+    y = "Стойности")+
+  theme_bw()
+  
+```
 
 
 
