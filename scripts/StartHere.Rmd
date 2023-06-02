@@ -124,6 +124,15 @@ mNNA
 Put the results in ggplot
 
 ```{r}
+df <- data.frame(
+  x = c(2, 1),
+  y = c(2, 2),
+  text = c("Равномерно", "Групирано")
+)
+```
+
+
+```{r}
 # Това е само със сигурните обекти
 
 bg_period <- c("Пра.",	"Нео.",	"Х",	"БЕ",	"РБЕ",	"ЖЕ",	"РЖЕ",	"КЖЕ",	"Ел.",	"РЕ",	"КРЕ",	"КА",	"РСр.",	"ЗСр.",	"КСр.",	"Ср.XIV",	"Ср.XVII")
@@ -147,7 +156,9 @@ mNNA %>%
   ggplot(aes(x = period, y = values, group = studyarea, color = studyarea))+
   geom_line(size=1) + 
   geom_point(size=2)+
-      labs(
+  annotate("text", x=8, y=2.5, label= "italic(Разпръснато)", parse=TRUE)+
+  annotate("text", x=8, y=0, label= "italic(Групирано)", parse=TRUE)+
+    labs(
     title = "Анализ на най-близкия съсед за сигурно датираните селища",
     color = "Тестови територии",
     x = "Периоди",
@@ -182,6 +193,8 @@ mNNA %>%
   ggplot(aes(x = period, y = values, group = studyarea, color = studyarea))+
   geom_line(size=1) + 
   geom_point(size=2)+
+  annotate("text", x=8, y=2.5, label= "italic(Разпръснато)", parse=TRUE)+
+  annotate("text", x=8, y=0, label= "italic(Групирано)", parse=TRUE)+
       labs(
     title = "Анализ на най-близкия съсед, включващ и несигурно датираните селища",
     color = "Тестови територии",
